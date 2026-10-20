@@ -1,0 +1,6 @@
+{
+  "name": "AI Vin20K Master Quiz & Exam",
+  "description": "Hệ thống ôn luyện 750 câu hỏi theo 15 chuyên đề và thi thử kiểm tra tổng hợp kiến thức AI Vin20K (100 câu / 100 phút) với phân tích, gợi ý và giải thích chuyên sâu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

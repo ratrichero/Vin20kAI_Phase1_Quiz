@@ -1,0 +1,952 @@
+[
+  {
+    "id": "QUANT_Q01",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Một ứng dụng Chatbot CSKH xử lý 10,000 lượt hỏi đáp mỗi ngày bằng tiếng Việt. Mỗi lượt gồm 1,500 từ tiếng Việt ở Input (Prompt + Context RAG) và LLM sinh ra 200 từ tiếng Việt ở Output. Giả định 1 từ tiếng Việt = 2 tokens. Đơn giá Claude 3.5 Sonnet: Input = $3.00/1M tokens, Output = $15.00/1M tokens. Tổng chi phí API hàng tháng (30 ngày) là bao nhiêu?",
+    "options": [
+      "A. $2,250",
+      "B. $3,600",
+      "C. $4,500",
+      "D. $5,400"
+    ],
+    "answer": "C",
+    "hint": "Quy đổi từ tiếng Việt sang Token: 1,500 từ Input = 3,000 tokens; 200 từ Output = 400 tokens. Tính tổng token Input & Output trong 1 ngày cho 10,000 lượt rồi nhân với đơn giá tương ứng.",
+    "A explanation": "Lựa chọn A ($2,250): Sai do tính nhầm tỷ lệ quy đổi token tiếng Việt 1 từ = 1 token thay vì 2 tokens.",
+    "B explanation": "Lựa chọn B ($3,600): Sai do quên không tính phần chi phí của Output tokens ($60/ngày).",
+    "C explanation": "Lựa chọn C ($4,500): Đúng. Input/ngày = 10,000 * 3,000 = 30M tokens ($90/ngày). Output/ngày = 10,000 * 400 = 4M tokens ($60/ngày). Tổng ngày = $150. Hàng tháng (30 ngày) = $150 * 30 = $4,500.",
+    "D explanation": "Lựa chọn D ($5,400): Sai do nhân nhầm đơn giá Output theo hệ số $20/1M tokens."
+  },
+  {
+    "id": "QUANT_Q02",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Mô hình GPT-4o có đơn giá Input = $2.50/1M tokens và Output = $10.00/1M tokens. Tại sao giá của Output token luôn cao hơn Input token gấp 4 lần?",
+    "options": [
+      "A. Do thuật toán Tokenizer mã hóa Output phức tạp hơn Input.",
+      "B. Do quá trình sinh từng Output token chạy tuần tự (Autoregressive) tốn tài nguyên VRAM và GPU compute hơn xử lý song song toàn bộ Input tokens (Prefill).",
+      "C. Do nhà cung cấp API thu thêm phí bản quyền nội dung được sinh ra.",
+      "D. Do Output token chiếm nhiều bộ nhớ Cache trên ổ đĩa SSD hơn."
+    ],
+    "answer": "B",
+    "hint": "Hãy chú ý đến sự khác biệt giữa giai đoạn Prefill (xử lý Input song song) và Decode (sinh từng token tuần tự).",
+    "A explanation": "Lựa chọn A: Sai. Thuật toán BPE Tokenizer hoạt động giống nhau cho cả Input và Output.",
+    "B explanation": "Lựa chọn B: Đúng. Trong giai đoạn Prefill, GPU xử lý hàng nghìn Input token song song cực kỳ hiệu quả. Trong giai đoạn Decode, GPU phải nạp lại toàn bộ trọng số mô hình cho mỗi duy nhất 1 token đầu ra, dẫn đến hiện tượng Memory-bandwidth bound và tiêu tốn GPU compute/VRAM hơn nhiều.",
+    "C explanation": "Lựa chọn C: Sai. Chi phí API thuần túy dựa trên tài nguyên hạ tầng tính toán.",
+    "D explanation": "Lựa chọn D: Sai. Việc tính toán diễn ra trên GPU VRAM chứ không phụ thuộc SSD."
+  },
+  {
+    "id": "QUANT_Q03",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Một hệ thống áp dụng tính năng Anthropic Prompt Caching. Đơn giá Base Input = $3.00/1M tokens, Cached Input Read = $0.30/1M tokens (giảm 90%). Nếu System Prompt dài 50,000 tokens được giữ cố định trong Cache và gọi 1,000 lần mỗi giờ, số tiền tiết kiệm được nhờ Prompt Caching trong 1 giờ là bao nhiêu?",
+    "options": [
+      "A. $135.00",
+      "B. $150.00",
+      "C. $15.00",
+      "D. $270.00"
+    ],
+    "answer": "A",
+    "hint": "Tính tổng token Input = 50,000 * 1,000 = 50M tokens. So sánh chi phí khi không dùng Cache ($3.00/1M) và khi dùng Cache ($0.30/1M).",
+    "A explanation": "Lựa chọn A ($135.00): Đúng. Tổng Input tokens = 50M. Chi phí gốc = 50 * $3.00 = $150. Chi phí khi Cached = 50 * $0.30 = $15. Số tiền tiết kiệm = $150 - $15 = $135.00/giờ.",
+    "B explanation": "Lựa chọn B ($150.00): Sai. Đây là chi phí gốc khi chưa áp dụng Caching.",
+    "C explanation": "Lựa chọn C ($15.00): Sai. Đây là chi phí phải trả sau khi đã giảm giá, không phải số tiền tiết kiệm.",
+    "D explanation": "Lựa chọn D ($270.00): Sai do nhân đôi số token tính toán."
+  },
+  {
+    "id": "QUANT_Q04",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Doanh nghiệp muốn so sánh chi phí giữa RAG (với Context 10,000 tokens/request) và Fine-Tuning (với Context 500 tokens/request). Giả định giá API là $2.00/1M tokens Input. Với 100,000 requests/tháng, RAG tiêu tốn thêm bao nhiêu chi phí API Input so với Fine-Tuning?",
+    "options": [
+      "A. $1,900",
+      "B. $2,000",
+      "C. $1,800",
+      "D. $900"
+    ],
+    "answer": "A",
+    "hint": "Tính chênh lệch token mỗi request = 10,000 - 500 = 9,500 tokens. Nhân với 100,000 requests để ra tổng token chênh lệch, sau đó tính chi phí theo đơn giá $2.00/1M.",
+    "A explanation": "Lựa chọn A ($1,900): Đúng. Tổng token chênh lệch = 9,500 * 100,000 = 950,000,000 tokens = 950M tokens. Chi phí thêm = 950 * $2.00 = $1,900.",
+    "B explanation": "Lựa chọn B ($2,000): Sai do bỏ qua 500 tokens của Fine-Tuning khi tính toán.",
+    "C explanation": "Lựa chọn C ($1,800): Sai do tính nhầm chênh lệch token là 9,000 tokens/request.",
+    "D explanation": "Lựa chọn D ($900): Sai do chia nhầm hệ số đơn giá."
+  },
+  {
+    "id": "QUANT_Q05",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Một kho tài liệu gồm 1,000,000 trang sách. Mỗi trang chứa trung bình 400 từ tiếng Anh (1 từ = 1.33 tokens). Để tạo Vector Embedding bằng model `text-embedding-3-small` với giá $0.02/1M tokens, tổng chi phí nhúng dữ liệu ban đầu là bao nhiêu?",
+    "options": [
+      "A. $10.64",
+      "B. $8.00",
+      "C. $106.40",
+      "D. $53.20"
+    ],
+    "answer": "A",
+    "hint": "Tính tổng số từ = 1,000,000 * 400 = 400M từ. Chuyển sang token = 400M * 1.33 = 532M tokens. Nhân với $0.02 trên mỗi 1M tokens.",
+    "A explanation": "Lựa chọn A ($10.64): Đúng. Tổng tokens = 1,000,000 * 400 * 1.33 = 532,000,000 tokens = 532M. Chi phí = 532 * $0.02 = $10.64.",
+    "B explanation": "Lựa chọn B ($8.00): Sai do quên không nhân hệ số chuyển đổi từ sang token (1.33).",
+    "C explanation": "Lựa chọn C ($106.40): Sai do tính nhầm đơn giá $0.20/1M tokens.",
+    "D explanation": "Lựa chọn D ($53.20): Sai do tính nhầm số trang là 5,000,000 trang."
+  },
+  {
+    "id": "QUANT_Q06",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Một ứng dụng trích xuất dữ liệu từ hoá đơn JSON. Do định dạng JSON chứa nhiều ký tự cấu trúc (ngoặc nhọn, ngoặc vuông, dấu ngoặc kép), số lượng subword tokens tăng 40% so với văn bản thuần. Nếu văn bản thuần là 1,000 từ (~1,330 tokens), số token thực tế khi chuyển sang định dạng JSON là bao nhiêu?",
+    "options": [
+      "A. 1,862 tokens",
+      "B. 1,400 tokens",
+      "C. 2,100 tokens",
+      "D. 1,330 tokens"
+    ],
+    "answer": "A",
+    "hint": "Tính số token cơ bản = 1,330. Tăng 40% có nghĩa là nhân với hệ số 1.4.",
+    "A explanation": "Lựa chọn A (1,862 tokens): Đúng. Kích thước token thực tế = 1,330 * 1.4 = 1,862 tokens.",
+    "B explanation": "Lựa chọn B (1,400 tokens): Sai do tính 40% trên số từ (1,000 từ) rồi cộng lại.",
+    "C explanation": "Lựa chọn C (2,100 tokens): Sai do nhân hệ số tăng 60%.",
+    "D explanation": "Lựa chọn D (1,330 tokens): Sai do không tính yếu tố gia tăng token của cú pháp JSON."
+  },
+  {
+    "id": "QUANT_Q07",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Hệ thống Multi-Agent có 1 Agent chính (Supervisor) và 3 Subagents (Worker). Khi có 1 câu hỏi từ người dùng, Supervisor mất 1,000 tokens Input/200 tokens Output để chia việc. Mỗi Subagent mất 2,000 tokens Input/500 tokens Output. Supervisor mất thêm 2,000 tokens Input/300 tokens Output để tổng hợp. Tổng token Input và Output cho toàn bộ lượt xử lý Multi-Agent này là bao nhiêu?",
+    "options": [
+      "A. Input: 9,000 tokens | Output: 2,000 tokens",
+      "B. Input: 5,000 tokens | Output: 1,000 tokens",
+      "C. Input: 7,000 tokens | Output: 1,500 tokens",
+      "D. Input: 11,000 tokens | Output: 2,500 tokens"
+    ],
+    "answer": "A",
+    "hint": "Tính riêng Input: Supervisor bước 1 (1,000) + 3 Subagents (3 * 2,000 = 6,000) + Supervisor bước 2 (2,000) = 9,000. Tính tương tự cho Output.",
+    "A explanation": "Lựa chọn A: Đúng. Total Input = 1,000 + (3 * 2,000) + 2,000 = 9,000 tokens. Total Output = 200 + (3 * 500) + 300 = 2,000 tokens.",
+    "B explanation": "Lựa chọn B: Sai do chỉ tính 1 Subagent thay vì 3 Subagents.",
+    "C explanation": "Lựa chọn C: Sai do bỏ qua bước tổng hợp cuối cùng của Supervisor.",
+    "D explanation": "Lựa chọn D: Sai do cộng thừa chi phí khởi tạo."
+  },
+  {
+    "id": "QUANT_Q08",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Nếu giá GPU Cloud Instance (A100 80GB) là $2.50/giờ và mô hình tự Host có khả năng phục vụ trung bình 20 requests/phút. Chi phí hạ tầng tính trên mỗi request (chỉ tính compute) là bao nhiêu?",
+    "options": [
+      "A. $0.00208",
+      "B. $0.0208",
+      "C. $0.00125",
+      "D. $0.1250"
+    ],
+    "answer": "A",
+    "hint": "Tính số request phục vụ trong 1 giờ = 20 * 60 = 1,200 requests. Chia chi phí $2.50 cho 1,200 requests.",
+    "A explanation": "Lựa chọn A ($0.00208): Đúng. Số request/giờ = 20 * 60 = 1,200. Chi phí/request = $2.50 / 1,200 = $0.002083 (~0.21 cents).",
+    "B explanation": "Lựa chọn B ($0.0208): Sai do chia nhầm cho 120 requests/giờ.",
+    "C explanation": "Lựa chọn C ($0.00125): Sai do tính trên cơ sở 2,000 requests/giờ.",
+    "D explanation": "Lựa chọn D ($0.1250): Sai do chia $2.50 cho 20."
+  },
+  {
+    "id": "QUANT_Q09",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Một nhà phát triển cắt giảm System Prompt từ 3,000 tokens xuống 1,000 tokens bằng kỹ thuật Prompt Pruning mà vẫn giữ nguyên chất lượng. Nếu ứng dụng có 500,000 requests/tháng và giá Input token là $3.00/1M, số tiền tiết kiệm hàng tháng là bao nhiêu?",
+    "options": [
+      "A. $3,000",
+      "B. $1,500",
+      "C. $4,500",
+      "D. $1,000"
+    ],
+    "answer": "A",
+    "hint": "Số token giảm được mỗi request = 3,000 - 1,000 = 2,000 tokens. Tổng token giảm hàng tháng = 2,000 * 500,000 = 1,000M tokens.",
+    "A explanation": "Lựa chọn A ($3,000): Đúng. Token tiết kiệm/tháng = 2,000 * 500,000 = 1,000,000,000 tokens = 1,000M tokens. Tiết kiệm = 1,000 * $3.00 = $3,000/tháng.",
+    "B explanation": "Lựa chọn B ($1,500): Sai do tính chênh lệch 1,000 tokens/request.",
+    "C explanation": "Lựa chọn C ($4,500): Sai do tính trên tổng chi phí ban đầu khi chưa cắt giảm.",
+    "D explanation": "Lựa chọn D ($1,000): Sai do lấy 1,000M tokens nhân đơn giá $1.00."
+  },
+  {
+    "id": "QUANT_Q10",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Token Cost & API Pricing",
+    "question": "Trong việc tối ưu hóa chi phí API, tại sao mô hình Causal Decoder-only lại tính tiền Input Token rẻ hơn đáng kể so với Output Token?",
+    "options": [
+      "A. Vì Input Token không cần đưa vào bộ nhớ GPU VRAM.",
+      "B. Vì Input Token được xử lý đồng thời (parallel prefill matrix multiplication), trong khi Output Token bắt buộc sinh từng token tuần tự (sequential autoregressive decoding).",
+      "C. Vì Input Token chỉ dùng thuật toán mã hóa cổ điển không tốn điện năng.",
+      "D. Vì nhà cung cấp API trợ giá cho phần Prompt của người dùng."
+    ],
+    "answer": "B",
+    "hint": "Suy nghĩ về khả năng tính toán song song của GPU đối với ma trận Attention đầu vào so với vòng lặp sinh từng từ nối tiếp.",
+    "A explanation": "Lựa chọn A: Sai. Cả Input và Output token đều bắt buộc nạp vào KV Cache trên VRAM.",
+    "B explanation": "Lựa chọn B: Đúng. Trong pha Prefill, toàn bộ Input token được nhân ma trận song song tận dụng tối đa băng thông và lõi GPU Tensor. Trong pha Decode, mô hình phải thực hiện 1 pass qua GPU chỉ để tạo ra 1 token duy nhất.",
+    "C explanation": "Lựa chọn C: Sai. Input token vẫn chạy qua tất cả các lớp Transformer.",
+    "D explanation": "Lựa chọn D: Sai. Đây là yếu tố chi phí phần cứng thuần túy."
+  },
+  {
+    "id": "QUANT_Q11",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Hệ thống Voicebot dạng Cascaded Pipeline có các thông số độ trễ từng khâu: STT (Deepgram) = 180ms, LLM TTFT (Time-To-First-Token) = 220ms, TTS First Chunk (Cartesia) = 150ms, Network Latency = 100ms. Tổng độ trễ cảm nhận (Perceived Latency) từ khi người dùng ngừng nói đến khi nghe thấy âm thanh đầu tiên phát ra là bao nhiêu?",
+    "options": [
+      "A. 650 ms",
+      "B. 850 ms",
+      "C. 500 ms",
+      "D. 1,000 ms"
+    ],
+    "answer": "A",
+    "hint": "Cộng trực tiếp độ trễ của tất cả các khâu tuần tự để ra âm thanh đầu tiên: STT + LLM_TTFT + TTS_Chunk + Network.",
+    "A explanation": "Lựa chọn A (650 ms): Đúng. T_perceived = 180 + 220 + 150 + 100 = 650 ms (< 1,000 ms tiêu chuẩn voice bot realtime).",
+    "B explanation": "Lựa chọn B (850 ms): Sai do cộng thừa thời gian sinh toàn bộ câu của LLM.",
+    "C explanation": "Lựa chọn C (500 ms): Sai do quên không tính độ trễ mạng Network Latency.",
+    "D explanation": "Lựa chọn D (1,000 ms): Sai do tính theo thời gian phản hồi không dùng Streaming."
+  },
+  {
+    "id": "QUANT_Q12",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Nếu một LLM sinh văn bản với tốc độ 50 tokens/giây (TPS). Thời gian để sinh ra một vế câu đầu tiên gồm 20 tokens phục vụ cho TTS phát âm thanh là bao nhiêu?",
+    "options": [
+      "A. 400 ms",
+      "B. 250 ms",
+      "C. 500 ms",
+      "D. 200 ms"
+    ],
+    "answer": "A",
+    "hint": "Thời gian = (Số tokens / Tốc độ TPS) * 1,000 ms.",
+    "A explanation": "Lựa chọn A (400 ms): Đúng. Thời gian sinh 20 tokens = (20 / 50) * 1,000 ms = 0.4 giây = 400 ms.",
+    "B explanation": "Lựa chọn B (250 ms): Sai do tính theo tốc độ 80 TPS.",
+    "C explanation": "Lựa chọn C (500 ms): Sai do tính theo tốc độ 40 TPS.",
+    "D explanation": "Lựa chọn D (200 ms): Sai do tính theo tốc độ 100 TPS."
+  },
+  {
+    "id": "QUANT_Q13",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "SLA của một ứng dụng Real-time Chat yêu cầu Time-To-First-Token (TTFT) phải dưới 300ms. Nếu giai đoạn Prompt Processing (Prefill) mất 150ms và độ trễ mạng là 50ms, thời gian tối đa cho phép mô hình tính toán token đầu tiên trên GPU là bao nhiêu?",
+    "options": [
+      "A. 100 ms",
+      "B. 150 ms",
+      "C. 200 ms",
+      "D. 50 ms"
+    ],
+    "answer": "A",
+    "hint": "Trừ thời gian Prefill và Network khỏi ngân sách TTFT tổng: 300ms - 150ms - 50ms.",
+    "A explanation": "Lựa chọn A (100 ms): Đúng. Thời gian GPU khả dụng = 300 - 150 - 50 = 100 ms.",
+    "B explanation": "Lựa chọn B (150 ms): Sai do quên không trừ độ trễ mạng Network Latency.",
+    "C explanation": "Lựa chọn C (200 ms): Sai do chỉ trừ độ trễ mạng.",
+    "D explanation": "Lựa chọn D (50 ms): Sai do trừ quá tay."
+  },
+  {
+    "id": "QUANT_Q14",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Trong kịch bản không dùng Streaming (Non-streaming), LLM mất 200ms TTFT và sinh 100 tokens với tốc độ 40 tokens/giây. Tổng thời gian người dùng phải chờ để thấy phản hồi hoàn chỉnh là bao nhiêu?",
+    "options": [
+      "A. 2,700 ms (2.7s)",
+      "B. 2,500 ms (2.5s)",
+      "C. 200 ms (0.2s)",
+      "D. 1,000 ms (1.0s)"
+    ],
+    "answer": "A",
+    "hint": "Thời gian hoàn thành = TTFT + (Số tokens / TPS). Quy đổi toàn bộ ra miligiây.",
+    "A explanation": "Lựa chọn A (2,700 ms): Đúng. Thời gian sinh 100 tokens = 100 / 40 = 2.5s = 2,500ms. Tổng thời gian chờ = 200ms (TTFT) + 2,500ms = 2,700ms (2.7 giây).",
+    "B explanation": "Lựa chọn B (2,500 ms): Sai do quên cộng TTFT ban đầu.",
+    "C explanation": "Lựa chọn C (200 ms): Sai vì đây chỉ là thời gian chờ khi CÓ Streaming.",
+    "D explanation": "Lựa chọn D (1,000 ms): Sai do tính nhầm tốc độ sinh token."
+  },
+  {
+    "id": "QUANT_Q15",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Kỹ thuật Chunk Streaming trong Server-Sent Events (SSE) giúp giảm cảm giác chờ đợi (Perceived Latency) nhờ cơ chế nào?",
+    "options": [
+      "A. Tăng tốc độ tính toán phần cứng GPU lên gấp 10 lần.",
+      "B. Đẩy từng token/chunk văn bản tới Client ngay khi nó vừa được sinh ra thay vì đợi sinh xong toàn bộ văn bản.",
+      "C. Nén câu trả lời lại chỉ còn 1/10 độ dài ban đầu.",
+      "D. Tự động bỏ qua khâu kiểm duyệt an toàn Guardrails."
+    ],
+    "answer": "B",
+    "hint": "Streaming ảnh hưởng tới Time-To-First-Token nhìn thấy trên giao diện người dùng.",
+    "A explanation": "Lựa chọn A: Sai. Streaming không làm thay đổi tốc độ phần cứng GPU.",
+    "B explanation": "Lựa chọn B: Đúng. Thay vì người dùng phải đợi 3 giây để thấy 100 tokens, họ thấy token đầu tiên sau 200ms và đọc liên tục trong khi mô hình tiếp tục sinh.",
+    "C explanation": "Lựa chọn C: Sai. Streaming giữ nguyên toàn bộ nội dung sinh ra.",
+    "D explanation": "Lựa chọn D: Sai. Guardrails vẫn có thể chạy trên từng chunk hoặc stream song song."
+  },
+  {
+    "id": "QUANT_Q16",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Tính năng ngắt lời (Barge-in) trong Voicebot yêu cầu hệ thống phải hủy tác vụ sinh LLM và tắt âm thanh TTS trong vòng bao lâu để không gây trải nghiệm phản hồi chồng đè khó chịu?",
+    "options": [
+      "A. < 200 ms",
+      "B. 1,000 ms - 2,000 ms",
+      "C. 5,000 ms",
+      "D. Không giới hạn thời gian"
+    ],
+    "answer": "A",
+    "hint": "Khi người dùng cất lời ngắt câu, phản hồi âm thanh của Bot phải dừng lại ngay lập tức gần như tức thì.",
+    "A explanation": "Lựa chọn A (< 200 ms): Đúng. Tiêu chuẩn UX cho Voice Bot tương tác tự nhiên yêu cầu phát hiện Voice Activity Detection (VAD) và ngắt âm thanh TTS dưới 200ms.",
+    "B explanation": "Lựa chọn B: Sai. Độ trễ 1-2 giây sẽ làm cả người dùng và Bot nói đè lên nhau gây hỗn loạn.",
+    "C explanation": "Lựa chọn C: Sai. Quá chậm cho giao tiếp thoại.",
+    "D explanation": "Lựa chọn D: Sai. Thiếu kiểm soát Barge-in làm vỡ kịch bản hội thoại."
+  },
+  {
+    "id": "QUANT_Q17",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Một Agent phải thực hiện 3 lệnh gọi Tool API song song (Weather API: 200ms, Stock API: 450ms, News API: 300ms). Thời gian chờ tối thiểu cho công đoạn gọi Tool này là bao nhiêu?",
+    "options": [
+      "A. 450 ms",
+      "B. 950 ms",
+      "C. 300 ms",
+      "D. 200 ms"
+    ],
+    "answer": "A",
+    "hint": "Khi các tác vụ bất đồng bộ (async/parallel) chạy song song, độ trễ tổng bằng độ trễ của tác vụ chậm nhất (bottleneck).",
+    "A explanation": "Lựa chọn A (450 ms): Đúng. Gọi song song có nghĩa độ trễ tổng = Max(200, 450, 300) = 450 ms (Stock API).",
+    "B explanation": "Lựa chọn B (950 ms): Sai vì đây là tổng thời gian nếu gọi tuần tự (Sequential): 200 + 450 + 300 = 950 ms.",
+    "C explanation": "Lựa chọn C (300 ms): Sai do chọn giá trị trung bình.",
+    "D explanation": "Lựa chọn D (200 ms): Sai do chọn giá trị nhỏ nhất."
+  },
+  {
+    "id": "QUANT_Q18",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Sự khác biệt về độ trễ giữa kết nối WebSocket hai chiều và HTTP REST request truyền thống đối với các ứng dụng AI Realtime là gì?",
+    "options": [
+      "A. WebSocket loại bỏ chi phí bắt tay TCP/TLS (handshake overhead) cho mỗi lượt tin nhắn, giảm độ trễ từ 50-100ms mỗi request.",
+      "B. HTTP REST chạy nhanh hơn WebSocket gấp 2 lần.",
+      "C. WebSocket không hỗ trợ truyền dữ liệu nhị phân Audio.",
+      "D. Cả hai có độ trễ hoàn toàn giống hệt nhau."
+    ],
+    "answer": "A",
+    "hint": "Suy nghĩ về cơ chế duy trì kết nối liên tục (persistent connection) của WebSocket so with việc mở/đóng kết nối mới ở mỗi REST HTTP request.",
+    "A explanation": "Lựa chọn A: Đúng. WebSocket thiết lập kết nối full-duplex cố định, giúp gửi và nhận frame dữ liệu/audio ngay lập tức mà không tốn chi phí thiết lập lại HTTP header/TLS handshake.",
+    "B explanation": "Lựa chọn B: Sai. HTTP REST có độ trễ lớn hơn do chi phí request/response riêng biệt.",
+    "C explanation": "Lựa chọn C: Sai. WebSocket hỗ trợ truyền Binary Data rất tốt cho Audio Chunking.",
+    "D explanation": "Lựa chọn D: Sai. Khác biệt rõ rệt ở quy mô các ứng dụng thoại thời gian thực."
+  },
+  {
+    "id": "QUANT_Q19",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Nếu thời gian xử lý của STT là 200ms, LLM là 500ms, TTS là 300ms và người dùng nói 1 câu kéo dài 3,000ms. Trong kịch bản giao tiếp không có Streaming, tổng thời gian từ khi người dùng BẮT ĐẦU nói đến khi người dùng NGHE HẾT câu trả lời dài 2,000ms của Bot là bao nhiêu?",
+    "options": [
+      "A. 6,000 ms (6.0s)",
+      "B. 4,000 ms (4.0s)",
+      "C. 3,000 ms (3.0s)",
+      "D. 1,000 ms (1.0s)"
+    ],
+    "answer": "A",
+    "hint": "Cộng toàn bộ chuỗi thời gian: Thời gian người dùng nói (3,000) + STT (200) + LLM (500) + TTS (300) + Thời gian nghe Bot nói (2,000).",
+    "A explanation": "Lựa chọn A (6,000 ms): Đúng. Tổng thời gian vòng đời hội thoại = 3,000 (User speaking) + 200 (STT) + 500 (LLM) + 300 (TTS) + 2,000 (Bot speaking) = 6,000 ms (6 giây).",
+    "B explanation": "Lựa chọn B (4,000 ms): Sai do quên không tính thời gian người dùng nói.",
+    "C explanation": "Lựa chọn C (3,000 ms): Sai do chỉ tính thời gian người dùng nói.",
+    "D explanation": "Lựa chọn D (1,000 ms): Sai do chỉ tính thời gian xử lý kỹ thuật của Bot."
+  },
+  {
+    "id": "QUANT_Q20",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Latency Budget & Voice AI",
+    "question": "Yếu tố nào đóng vai trò là điểm nghẽn độ trễ (Latency Bottleneck) lớn nhất trong hầu hết các ứng dụng RAG Agent hiện nay?",
+    "options": [
+      "A. Giai đoạn sinh token của mô hình LLM (LLM Generation / Decoding phase) và câu lệnh tìm kiếm Re-ranking.",
+      "B. Thời gian đọc dữ liệu từ bộ nhớ RAM.",
+      "C. Thời gian hiển thị văn bản lên màn hình của trình duyệt Web.",
+      "D. Khâu mã hóa UTF-8 của câu hỏi."
+    ],
+    "answer": "A",
+    "hint": "So sánh thời gian tính toán mức miligiây của RAM/Browser với thời gian nạp trọng số mô hình LLM và Cross-Encoder Re-ranker.",
+    "A explanation": "Lựa chọn A: Đúng. Vòng lặp Autoregressive decode của LLM và việc chạy mô hình Cross-Encoder để Re-rank các đoạn văn bản tiêu tốn hàng trăm đến hàng nghìn miligiây, chiếm 80-90% tổng độ trễ hệ thống.",
+    "B explanation": "Lựa chọn B: Sai. Đọc RAM chỉ mất vài nanogiây đến microgiây.",
+    "C explanation": "Lựa chọn C: Sai. Browser render văn bản gần như tức thì.",
+    "D explanation": "Lựa chọn D: Sai. Encode UTF-8 không đáng kể."
+  },
+  {
+    "id": "QUANT_Q21",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Trong đánh giá RAGAS, câu trả lời của LLM trích xuất ra 5 phát biểu (claims). Kiểm tra đối chiếu với Context retrieved cho thấy: 3 phát biểu có bằng chứng xác thực trực tiếp, 1 phát biểu bị sai lệch số liệu và 1 phát biểu hoàn toàn không được đề cập trong Context. Điểm Faithfulness (Độ trung thực) là bao nhiêu?",
+    "options": [
+      "A. 0.60 (60%)",
+      "B. 0.80 (80%)",
+      "C. 0.40 (40%)",
+      "D. 1.00 (100%)"
+    ],
+    "answer": "A",
+    "hint": "Công thức Faithfulness = (Số phát biểu đúng có trong Context) / (Tổng số phát biểu sinh ra trong Answer).",
+    "A explanation": "Lựa chọn A (0.60): Đúng. Faithfulness = 3 / 5 = 0.60 (60%). Mức này không đạt tiêu chuẩn Production (yêu cầu >= 0.85).",
+    "B explanation": "Lựa chọn B (0.80): Sai do chỉ trừ 1 phát biểu sai số liệu mà bỏ qua phát biểu không đề cập.",
+    "C explanation": "Lựa chọn C (0.40): Sai do lấy 2 phát biểu vi phạm chia cho 5.",
+    "D explanation": "Lựa chọn D (1.00): Sai do coi tất cả phát biểu đều hợp lệ."
+  },
+  {
+    "id": "QUANT_Q22",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Đánh giá chỉ số Answer Relevance trong RAGAS bằng cách bảo LLM sinh ngược lại 3 câu hỏi từ Answer thu được. Tương quan Cosine Similarity giữa Embedding của 3 câu hỏi tạo ra và Query ban đầu lần lượt là: 0.90, 0.85, và 0.95. Điểm Answer Relevance tổng hợp là bao nhiêu?",
+    "options": [
+      "A. 0.90",
+      "B. 0.85",
+      "C. 0.95",
+      "D. 2.70"
+    ],
+    "answer": "A",
+    "hint": "Answer Relevance bằng trung bình cộng (Mean) giá trị Cosine Similarity của các câu hỏi được sinh ngược lại.",
+    "A explanation": "Lựa chọn A (0.90): Đúng. Answer Relevance = (0.90 + 0.85 + 0.95) / 3 = 2.70 / 3 = 0.90.",
+    "B explanation": "Lựa chọn B (0.85): Sai do lấy giá trị nhỏ nhất (Min).",
+    "C explanation": "Lựa chọn C (0.95): Sai do lấy giá trị lớn nhất (Max).",
+    "D explanation": "Lựa chọn D (2.70): Sai do quên chia cho số lượng 3 câu hỏi."
+  },
+  {
+    "id": "QUANT_Q23",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Hệ thống RAG truy xuất Top 4 chunks. Kiểm tra thực tế cho thấy: Chunk 1 Đúng (Relevant), Chunk 2 Sai, Chunk 3 Đúng, Chunk 4 Sai. Chỉ số Context Precision@4 (ưu tiên vị trí xếp hạng chunk đúng) được tính toán ra kết quả là bao nhiêu?",
+    "options": [
+      "A. 0.833 (83.3%)",
+      "B. 0.500 (50.0%)",
+      "C. 0.667 (66.7%)",
+      "D. 1.000 (100.0%)"
+    ],
+    "answer": "A",
+    "hint": "Tính Precision@k tại các vị trí k có chunk ĐÚNG. Vị trí 1: Precision@1 = 1/1 = 1.0. Vị trí 3: Precision@3 = 2/3 = 0.667. Trung bình Context Precision = (1.0 + 0.667) / 2 (tổng số chunk đúng).",
+    "A explanation": "Lựa chọn A (0.833): Đúng. Vị trí 1 (Đúng): Precision@1 = 1/1 = 1.0. Vị trí 3 (Đúng): Precision@3 = 2/3 = 0.667. Tổng Precision các vị trí đúng = 1.0 + 0.667 = 1.667. Chia cho tổng số chunk đúng (2) = 1.667 / 2 = 0.8333.",
+    "B explanation": "Lựa chọn B (0.500): Sai vì đây chỉ là tỷ lệ Precision thô không tính trọng số thứ tự (2/4 = 0.5).",
+    "C explanation": "Lựa chọn C (0.667): Sai do tính nhầm vị trí.",
+    "D explanation": "Lựa chọn D (1.000): Sai do coi tất cả các vị trí đều đúng."
+  },
+  {
+    "id": "QUANT_Q24",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Một câu hỏi trong tập Golden Dataset yêu cầu 4 ý thông tin quan trọng trong Ground Truth. Sau khi thực hiện Retrieval, các đoạn Context tìm được chỉ chứa đúng 3 ý thông tin. Chỉ số Context Recall đạt giá trị bao nhiêu?",
+    "options": [
+      "A. 0.75 (75%)",
+      "B. 0.25 (25%)",
+      "C. 1.00 (100%)",
+      "D. 0.50 (50%)"
+    ],
+    "answer": "A",
+    "hint": "Context Recall = (Số thông tin Ground Truth xuất hiện trong Context) / (Tổng số thông tin trong Ground Truth).",
+    "A explanation": "Lựa chọn A (0.75): Đúng. Context Recall = 3 / 4 = 0.75 (75%).",
+    "B explanation": "Lựa chọn B (0.25): Sai do lấy phần thông tin bị thiếu (1/4).",
+    "C explanation": "Lựa chọn C (1.00): Sai do giả định đã tìm đủ thông tin.",
+    "D explanation": "Lựa chọn D (0.50): Sai do tính nhầm tỷ lệ."
+  },
+  {
+    "id": "QUANT_Q25",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Điểm RAGAS tổng hợp (Harmonic Mean) kết hợp giữa Faithfulness (0.80) và Answer Relevance (0.90) tính theo công thức Trung bình điều hòa là bao nhiêu?",
+    "options": [
+      "A. 0.847",
+      "B. 0.850",
+      "C. 0.720",
+      "D. 0.890"
+    ],
+    "answer": "A",
+    "hint": "Công thức Harmonic Mean của A và B = 2 * (A * B) / (A + B).",
+    "A explanation": "Lựa chọn A (0.847): Đúng. Harmonic Mean = 2 * (0.80 * 0.90) / (0.80 + 0.90) = 2 * 0.72 / 1.70 = 1.44 / 1.70 = 0.847.",
+    "B explanation": "Lựa chọn B (0.850): Sai vì đây là Trung bình cộng (Arithmetic Mean): (0.80 + 0.90) / 2 = 0.85.",
+    "C explanation": "Lựa chọn C (0.720): Sai vì đây là phép nhân trực tiếp.",
+    "D explanation": "Lựa chọn D (0.890): Sai do tính toán nhầm lẫn."
+  },
+  {
+    "id": "QUANT_Q26",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Nếu kiểm thử một hệ thống RAG trên 100 câu hỏi nghiệm thu (Golden Dataset) thu được kết quả: 90 câu có điểm Faithfulness = 1.0 và 10 câu hoàn toàn bị ảo giác (Faithfulness = 0.0). Điểm Faithfulness trung bình của toàn bộ hệ thống là bao nhiêu và có đạt ngưỡng Production 0.85 không?",
+    "options": [
+      "A. Điểm trung bình = 0.90 | Đạt tiêu chuẩn Production.",
+      "B. Điểm trung bình = 0.80 | Không đạt tiêu chuẩn Production.",
+      "C. Điểm trung bình = 0.95 | Đạt tiêu chuẩn Production.",
+      "D. Điểm trung bình = 0.85 | Vừa đủ tiêu chuẩn."
+    ],
+    "answer": "A",
+    "hint": "Tính điểm trung bình = ((90 * 1.0) + (10 * 0.0)) / 100. So sánh kết quả với ngưỡng 0.85.",
+    "A explanation": "Lựa chọn A: Đúng. Điểm trung bình = 90 / 100 = 0.90 (90%). Do 0.90 > 0.85 nên hệ thống đạt tiêu chuẩn phát hành.",
+    "B explanation": "Lựa chọn B: Sai do tính nhầm số câu ảo giác thành 20 câu.",
+    "C explanation": "Lựa chọn C: Sai do tính nhầm số câu ảo giác thành 5 câu.",
+    "D explanation": "Lựa chọn D: Sai do tính toán sai mức trung bình."
+  },
+  {
+    "id": "QUANT_Q27",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Khi tăng kích thước Chunk Size từ 250 tokens lên 2,000 tokens trong RAG Pipeline, chỉ số RAGAS nào thường có xu hướng TĂNG và chỉ số nào có nguy cơ GIẢM?",
+    "options": [
+      "A. Context Recall TĂNG (do chứa nhiều thông tin hơn), nhưng Context Precision GIẢM (do lẫn nhiều thông tin nhiễu/không liên quan).",
+      "B. Context Precision TĂNG, nhưng Context Recall GIẢM.",
+      "C. Cả Context Precision và Context Recall đều TĂNG.",
+      "D. Cả Context Precision và Context Recall đều GIẢM."
+    ],
+    "answer": "A",
+    "hint": "Chunk lớn chứa nhiều chữ hơn nên dễ bao phủ đủ thông tin (Recall tốt), nhưng tỷ lệ chữ hữu ích trên tổng số chữ của chunk lại thấp (Precision kém).",
+    "A explanation": "Lựa chọn A: Đúng. Chunk lớn gộp nhiều ý nên dễ tìm thấy Ground Truth (Context Recall tăng). Tuy nhiên nó kéo theo hàng nghìn từ nhiễu làm tỷ lệ thông tin phù hợp giảm (Context Precision giảm).",
+    "B explanation": "Lựa chọn B: Sai. Tác động bị ngược.",
+    "C explanation": "Lựa chọn C: Sai. Tồn tại mối quan hệ đánh đổi (trade-off) rõ rệt giữa Precision và Recall.",
+    "D explanation": "Lựa chọn D: Sai. Recall chắc chắn cải thiện khi chunk chứa nhiều thông tin hơn."
+  },
+  {
+    "id": "QUANT_Q28",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Khi dùng phương pháp LLM-as-a-Judge (GPT-4o) để chấm điểm câu trả lời, đánh giá trên 50 mẫu cho thấy GPT-4o chấm đồng ý với Chuyên gia người thật 40 lần. Chỉ số độ tương đồng (Inter-annotator Agreement Ratio) đạt bao nhiêu?",
+    "options": [
+      "A. 0.80 (80%)",
+      "B. 0.70 (70%)",
+      "C. 0.90 (90%)",
+      "D. 0.60 (60%)"
+    ],
+    "answer": "A",
+    "hint": "Agreement Ratio = (Số lượng mẫu chấm trùng khớp) / (Tổng số mẫu thử nghiệm).",
+    "A explanation": "Lựa chọn A (0.80): Đúng. Agreement Ratio = 40 / 50 = 0.80 (80%). Nhờ mức độ tương đồng > 80%, LLM Judge này đủ tin cậy để tự động hóa đánh giá CI/CD.",
+    "B explanation": "Lựa chọn B (0.70): Sai do tính 35/50.",
+    "C explanation": "Lựa chọn C (0.90): Sai do tính 45/50.",
+    "D explanation": "Lựa chọn D (0.60): Sai do tính 30/50."
+  },
+  {
+    "id": "QUANT_Q29",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Khái niệm 'Golden Dataset' trong quy trình AI Evaluation đòi hỏi tiêu chí quan trọng nào để đảm bảo tính khách quan?",
+    "options": [
+      "A. Phải được xây dựng hoàn toàn ngẫu nhiên không qua kiểm duyệt.",
+      "B. Bao gồm tập hợp các cặp (Query, Ground Truth, Expected Context) chuẩn mực đã được kiểm định thủ công bởi chuyên gia nghiệp vụ.",
+      "C. Chỉ bao gồm các câu hỏi dễ để mô hình đạt điểm 100%.",
+      "D. Phải tự động thay đổi nội dung sau mỗi 5 phút."
+    ],
+    "answer": "B",
+    "hint": "Golden Dataset là bộ dữ liệu chuẩn mực 'chuột bạch' dùng để chạy regression test đo lường độ suy giảm chất lượng qua các phiên bản.",
+    "A explanation": "Lựa chọn A: Sai. Dữ liệu ngẫu nhiên không kiểm duyệt sẽ chứa sai sót.",
+    "B explanation": "Lựa chọn B: Đúng. Golden Dataset làm thước đo chuẩn mực (benchmark) giúp chạy đánh giá tự động CI/CD mỗi khi thay đổi prompt hay model.",
+    "C explanation": "Lựa chọn C: Sai. Cần bao phủ cả case khó, edge cases và câu hỏi đa dạng.",
+    "D explanation": "Lựa chọn D: Sai. Bộ dữ liệu benchmark cần giữ cố định để so sánh giữa các phiên bản."
+  },
+  {
+    "id": "QUANT_Q30",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "RAGAS Metrics & Evaluation",
+    "question": "Chỉ số RAGAS nào trực tiếp đo lường nguy cơ vi phạm bảo mật và hiện tượng Hallucination (Ảo giác) trong câu trả lời sinh ra?",
+    "options": [
+      "A. Faithfulness",
+      "B. Context Recall",
+      "C. Latency",
+      "D. Token Usage"
+    ],
+    "answer": "A",
+    "hint": "Chỉ số đo lường việc câu trả lời có bịa ra thông tin không có trong tài liệu nguồn hay không.",
+    "A explanation": "Lựa chọn A (Faithfulness): Đúng. Faithfulness kiểm tra xem mọi khẳng định trong câu trả lời có được bảo chứng bởi Context hay không. Faithfulness thấp chính là biểu hiện trực tiếp của Hallucination.",
+    "B explanation": "Lựa chọn B (Context Recall): Sai. Context Recall đo độ đầy đủ của khâu tìm kiếm, không đo ảo giác của câu trả lời.",
+    "C explanation": "Lựa chọn C: Sai. Latency đo thời gian.",
+    "D explanation": "Lựa chọn D: Sai. Token Usage đo chi phí."
+  },
+  {
+    "id": "QUANT_Q31",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Một tài khoản API bị giới hạn Rate Limit: TPM = 2,000,000 (Tokens Per Minute). Nếu mỗi request tiêu tốn trung bình 4,000 tokens (cả Input & Output) và mỗi người dùng gửi trung bình 2 requests/phút. Số lượng người dùng đồng thời tối đa (Max Concurrency) hệ thống hỗ trợ được để không bị lỗi `429 Too Many Requests` là bao nhiêu?",
+    "options": [
+      "A. 250 người dùng",
+      "B. 500 người dùng",
+      "C. 1,000 người dùng",
+      "D. 125 người dùng"
+    ],
+    "answer": "A",
+    "hint": "Tính tiêu tốn token của 1 user trong 1 phút = 4,000 * 2 = 8,000 tokens/phút. Lấy TPM giới hạn chia cho mức tiêu tốn của 1 user.",
+    "A explanation": "Lựa chọn A (250 người dùng): Đúng. Tokens tiêu tốn/user/phút = 4,000 * 2 = 8,000 tokens. Max Users = 2,000,000 / 8,000 = 250 người dùng đồng thời.",
+    "B explanation": "Lựa chọn B (500 người dùng): Sai do giả định 1 user chỉ gửi 1 request/phút.",
+    "C explanation": "Lựa chọn C (1,000 người dùng): Sai do tính nhầm mỗi request tốn 2,000 tokens.",
+    "D explanation": "Lựa chọn D (125 người dùng): Sai do nhân đôi lượng tiêu thụ của user."
+  },
+  {
+    "id": "QUANT_Q32",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Nếu API có ngưỡng RPM = 600 (Requests Per Minute) và TPM = 300,000 (Tokens Per Minute). Nếu các request của ứng dụng rất ngắn, trung bình chỉ tốn 200 tokens/request, yếu tố nào sẽ trở thành 'điểm nghẽn' (bottleneck) chạm giới hạn trước?",
+    "options": [
+      "A. RPM (Requests Per Minute) chạm giới hạn 600 requests trước.",
+      "B. TPM (Tokens Per Minute) chạm giới hạn 300,000 tokens trước.",
+      "C. Cả RPM và TPM chạm giới hạn cùng một lúc.",
+      "D. Không có yếu tố nào bị nghẽn."
+    ],
+    "answer": "A",
+    "hint": "Tính tổng token khi đạt ngưỡng RPM = 600 requests * 200 tokens = 120,000 tokens. So sánh số này với TPM limit (300,000 tokens).",
+    "A explanation": "Lựa chọn A: Đúng. Với 600 requests/phút * 200 tokens = 120,000 tokens/phút (vẫn dưới mức TPM 300,000). Do đó RPM sẽ bị chạm ngưỡng 600 trước khi hết dung lượng TPM.",
+    "B explanation": "Lựa chọn B: Sai vì lượng token tiêu tốn thực tế (120k) mới đạt 40% TPM limit.",
+    "C explanation": "Lựa chọn C: Sai vì hai điểm nghẽn không đồng thời.",
+    "D explanation": "Lựa chọn D: Sai vì RPM sẽ bị chặn ở request thứ 601."
+  },
+  {
+    "id": "QUANT_Q33",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Một hội thoại dài acumulative tích lũy qua 20 lượt giao tiếp đạt dung lượng 100,000 tokens. Nếu áp dụng kỹ thuật Context Summarization nén lịch sử về 5,000 tokens, tỷ lệ nén (Compression Ratio) đạt được là bao nhiêu?",
+    "options": [
+      "A. 95% (Nén giảm 95% dung lượng)",
+      "B. 90%",
+      "C. 50%",
+      "D. 80%"
+    ],
+    "answer": "A",
+    "hint": "Tỷ lệ dung lượng giảm được = (Dung lượng gốc - Dung lượng sau nén) / Dung lượng gốc.",
+    "A explanation": "Lựa chọn A (95%): Đúng. Dung lượng tiết kiệm = (100,000 - 5,000) / 100,000 = 95,000 / 100,000 = 0.95 (95%).",
+    "B explanation": "Lựa chọn B (90%): Sai do tính nén về 10,000 tokens.",
+    "C explanation": "Lựa chọn C (50%): Sai do tính nén về 50,000 tokens.",
+    "D explanation": "Lựa chọn D (80%): Sai do tính nén về 20,000 tokens."
+  },
+  {
+    "id": "QUANT_Q34",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Để chạy một mô hình LLM 70 tỷ tham số (70B parameters) ở định dạng nửa chính xác FP16 (16-bit float = 2 bytes/parameter) thuần túy nạp trọng số vào GPU VRAM, dung lượng VRAM tối thiểu bắt buộc chỉ riêng cho Model Weights là bao nhiêu?",
+    "options": [
+      "A. 140 GB VRAM",
+      "B. 70 GB VRAM",
+      "C. 35 GB VRAM",
+      "D. 280 GB VRAM"
+    ],
+    "answer": "A",
+    "hint": "Dung lượng VRAM = Số lượng tham số * Số bytes cho mỗi tham số.",
+    "A explanation": "Lựa chọn A (140 GB VRAM): Đúng. VRAM Weights = 70B * 2 bytes = 140 GB. Cần ít nhất 2 card GPU A100 80GB (tổng 160GB) mới chạy được mô hình FP16 này.",
+    "B explanation": "Lựa chọn B (70 GB VRAM): Sai vì đây là dung lượng khi đã Quantization về INT8 (1 byte/param).",
+    "C explanation": "Lựa chọn C (35 GB VRAM): Sai vì đây là dung lượng khi đã Quantization về INT4 (0.5 bytes/param).",
+    "D explanation": "Lựa chọn D (280 GB VRAM): Sai do nhân với 4 bytes (FP32)."
+  },
+  {
+    "id": "QUANT_Q35",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Nếu áp dụng kỹ thuật Llama.cpp / AWQ Quantization nén mô hình 70B từ FP16 (140GB) xuống định dạng 4-bit INT4 (0.5 bytes/param = ~35GB). Dung lượng VRAM tiết kiệm được cho bộ nhớ động KV Cache là bao nhiêu?",
+    "options": [
+      "A. 105 GB VRAM (Tiết kiệm 75%)",
+      "B. 70 GB VRAM",
+      "C. 35 GB VRAM",
+      "D. 140 GB VRAM"
+    ],
+    "answer": "A",
+    "hint": "Dung lượng tiết kiệm = VRAM ban đầu (140GB) - VRAM sau nén (35GB).",
+    "A explanation": "Lựa chọn A (105 GB VRAM): Đúng. 140GB - 35GB = 105GB VRAM được giải phóng, cho phép phục vụ nhiều request đồng thời hơn với Context dài hơn.",
+    "B explanation": "Lựa chọn B (70 GB VRAM): Sai do tính nén về INT8.",
+    "C explanation": "Lựa chọn C (35 GB VRAM): Sai vì đây là dung lượng còn lại sau nén.",
+    "D explanation": "Lựa chọn D (140 GB VRAM): Sai do coi như giải phóng toàn bộ."
+  },
+  {
+    "id": "QUANT_Q36",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Hiện tượng 'Lost in the Middle' trong xử lý Context Window dài khuyến cáo kỹ thuật sắp xếp vị trí các đoạn tài liệu quan trọng như thế nào?",
+    "options": [
+      "A. Đặt tài liệu quan trọng nhất ở ĐẦU hoặc CUỐI của Prompt Context Window.",
+      "B. Đặt tài liệu quan trọng nhất ở CHÍNH GIỮA của Prompt Context Window.",
+      "C. Tráo ngẫu nhiên vị trí các tài liệu.",
+      "D. Ẩn tài liệu quan trọng trong System Prompt."
+    ],
+    "answer": "A",
+    "hint": "Mô hình chú ý (Attention) mạnh nhất ở phần đầu (Primacy effect) và phần cuối (Recency effect) của chuỗi văn bản.",
+    "A explanation": "Lựa chọn A: Đúng. Các nghiên cứu định lượng chứng minh LLM chú ý tốt nhất ở 2 đầu chuỗi và giảm khả năng trích xuất tới 30-50% nếu thông tin nằm ở quãng giữa (Middle) của Context dài.",
+    "B explanation": "Lựa chọn B: Sai. Đặt ở chính giữa chính là rơi vào vùng 'Lost in the Middle'.",
+    "C explanation": "Lựa chọn C: Sai. Việc tráo ngẫu nhiên không đảm bảo vị trí tối ưu.",
+    "D explanation": "Lựa chọn D: Sai. System Prompt vẫn thuộc phần đầu context nhưng chỉ dành cho chỉ dẫn."
+  },
+  {
+    "id": "QUANT_Q37",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Một thuật toán Exponential Backoff để xử lý khi bị chặn Rate Limit `429` thiết lập thời gian chờ khởi đầu $W_0 = 1\text{s}$ và hệ số nhân $2^x$ có độ nhiễu (jitter). Lần Retry thứ 3 (sau 3 lần thất bại) sẽ chờ thời gian gốc khoảng bao nhiêu giây?",
+    "options": [
+      "A. 8 giây ($2^3$)",
+      "B. 3 giây",
+      "C. 6 giây",
+      "D. 16 giây"
+    ],
+    "answer": "A",
+    "hint": "Thời gian retry = Base * 2^(mũ_lần_retry). Với lần 3: 1 * 2^3.",
+    "A explanation": "Lựa chọn A (8 giây): Đúng. Lần 1: $1 * 2^1 = 2s$; Lần 2: $1 * 2^2 = 4s$; Lần 3: $1 * 2^3 = 8s$.",
+    "B explanation": "Lựa chọn B (3 giây): Sai vì đây là phép cộng tuyến tính.",
+    "C explanation": "Lựa chọn C (6 giây): Sai do tính $2 * 3$.",
+    "D explanation": "Lựa chọn D (16 giây): Sai vì đây là thời gian lần thứ 4 ($2^4$)."
+  },
+  {
+    "id": "QUANT_Q38",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Tính năng KV Cache (Key-Value Cache) trong GPU VRAM lưu trữ những dữ liệu gì để tránh phải tính toán lại ở mỗi bước dự đoán token?",
+    "options": [
+      "A. Lưu trữ sẵn các ma trận Key và Value Tensor của các token đã xử lý trước đó trong chuỗi Context.",
+      "B. Lưu trữ mã nguồn Python của ứng dụng.",
+      "C. Lưu trữ file log giao dịch.",
+      "D. Lưu trữ lịch sử chat của tất cả người dùng trong CSDL SQL."
+    ],
+    "answer": "A",
+    "hint": "KV Cache giúp bước Decode chỉ cần tính Query cho token mới và nhân với Key/Value đã lưu trong VRAM.",
+    "A explanation": "Lựa chọn A: Đúng. KV Cache giữ lại kết quả tính toán K và V của tất cả các token trước đó, giúp giảm độ phức tạp tính toán từ $O(N^2)$ xuống $O(N)$ cho mỗi token mới.",
+    "B explanation": "Lựa chọn B: Sai. Mã nguồn lưu trên đĩa hoặc RAM.",
+    "C explanation": "Lựa chọn C: Sai. Log lưu trên đĩa.",
+    "D explanation": "Lựa chọn D: Sai. CSDL lưu riêng biệt."
+  },
+  {
+    "id": "QUANT_Q39",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Một file tài liệu có độ dài 100,000 tokens. Nếu đưa trực tiếp vào LLM có Context Window 128,000 tokens, tỷ lệ chiếm dụng Context Window của duy nhất tài liệu này là bao nhiêu?",
+    "options": [
+      "A. 78.1%",
+      "B. 50.0%",
+      "C. 90.0%",
+      "D. 100.0%"
+    ],
+    "answer": "A",
+    "hint": "Tỷ lệ chiếm dụng = 100,000 / 128,000 * 100%.",
+    "A explanation": "Lựa chọn A (78.1%): Đúng. 100,000 / 128,000 = 0.78125 = 78.1%. Chỉ còn lại ~28,000 tokens cho System Prompt, Chat History và Output sinh ra.",
+    "B explanation": "Lựa chọn B (50.0%): Sai do tính nhầm context 200k.",
+    "C explanation": "Lựa chọn C (90.0%): Sai do tính nhầm context 110k.",
+    "D explanation": "Lựa chọn D (100.0%): Sai do giả định tràn bộ nhớ."
+  },
+  {
+    "id": "QUANT_Q40",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Rate Limits & Capacity",
+    "question": "Khi áp dụng kỹ thuật Sliding Window Context (cửa sổ trượt giữ lại 10 lượt hội thoại gần nhất), lợi ích định lượng lớn nhất đạt được là gì?",
+    "options": [
+      "A. Giữ chi phí API Input và độ trễ ở mức hằng số ổn định (bounded constant), không bị tăng bùng nổ theo độ dài cuộc hội thoại.",
+      "B. Giúp mô hình nhớ lại chính xác thông tin từ 100 lượt trước.",
+      "C. Tự động tăng dung lượng VRAM GPU.",
+      "D. Loại bỏ hoàn toàn chi phí gọi API."
+    ],
+    "answer": "A",
+    "hint": "Suy nghĩ về dung lượng token Input khi cuộc trò chuyện kéo dài đến hàng trăm lượt nếu không có cửa sổ trượt.",
+    "A explanation": "Lựa chọn A: Đúng. Bằng cách giới hạn số lượt gần nhất, dung lượng Input token cho mỗi request luôn bị chặn trên ở một ngưỡng cố định, giữ cho chi phí và độ trễ ổn định.",
+    "B explanation": "Lựa chọn B: Sai. Cửa sổ trượt sẽ bỏ qua các lượt nằm ngoài cửa sổ.",
+    "C explanation": "Lựa chọn C: Sai. Không làm thay đổi phần cứng.",
+    "D explanation": "Lựa chọn D: Sai. Vẫn tốn chi phí cho 10 lượt trong cửa sổ."
+  },
+  {
+    "id": "QUANT_Q41",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Một doanh nghiệp chi trả $10,000/tháng cho chi phí API LLM. Tích hợp giải pháp Semantic Caching (Redis Vector) tiêu tốn $200/tháng chi phí hạ tầng Cache. Nếu Semantic Cache đạt Tỷ lệ Cache Hit Rate = 35% (ngăn 35% số query phải gọi tới LLM API), số tiền tiết kiệm ròng (Net Savings) hàng tháng là bao nhiêu?",
+    "options": [
+      "A. $3,300/tháng (Giảm 33% tổng chi phí)",
+      "B. $3,500/tháng",
+      "C. $2,800/tháng",
+      "D. $1,500/tháng"
+    ],
+    "answer": "A",
+    "hint": "Số tiền API giảm được = $10,000 * 35% = $3,500. Trừ đi chi phí vận hành Cache $200/tháng.",
+    "A explanation": "Lựa chọn A ($3,300/tháng): Đúng. Tiết kiệm từ API = $10,000 * 0.35 = $3,500. Chi phí mới = ($10,000 - $3,500) + $200 = $6,700. Tiết kiệm ròng = $10,000 - $6,700 = $3,300/tháng.",
+    "B explanation": "Lựa chọn B ($3,500/tháng): Sai do quên chưa trừ $200 chi phí hạ tầng Cache.",
+    "C explanation": "Lựa chọn C ($2,800/tháng): Sai do tính Hit Rate 30%.",
+    "D explanation": "Lựa chọn D ($1,500/tháng): Sai do tính Hit Rate 17%."
+  },
+  {
+    "id": "QUANT_Q42",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "So sánh TCO (Total Cost of Ownership) trong 1 năm giữa hai phương án: (A) Dùng Cloud API tốn $5,000/tháng; (B) Thuê Dedicated GPU Instance tốn $3,000/tháng + $1,000/tháng chi phí kỹ sư bảo trì. Phương án nào tiết kiệm hơn và tiết kiệm bao nhiêu trong 1 năm?",
+    "options": [
+      "A. Phương án B tiết kiệm hơn $12,000/năm.",
+      "B. Phương án A tiết kiệm hơn $6,000/năm.",
+      "C. Cả hai phương án có chi phí bằng nhau.",
+      "D. Phương án B tiết kiệm hơn $24,000/năm."
+    ],
+    "answer": "A",
+    "hint": "Tính TCO 1 năm cho A: $5,000 * 12. Tính TCO 1 năm cho B: ($3,000 + $1,000) * 12. Trừ hai kết quả.",
+    "A explanation": "Lựa chọn A: Đúng. TCO_A = $5,000 * 12 = $60,000/năm. TCO_B = ($3,000 + $1,000) * 12 = $48,000/năm. Tiết kiệm = $60,000 - $48,000 = $12,000/năm.",
+    "B explanation": "Lựa chọn B: Sai do tính nhầm chi phí phương án B.",
+    "C explanation": "Lựa chọn C: Sai vì chênh lệch $1,000/tháng.",
+    "D explanation": "Lựa chọn D: Sai do nhân đôi chênh lệch."
+  },
+  {
+    "id": "QUANT_Q43",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Tính chỉ số ROI (%) cho dự án triển khai AI Agent hỗ trợ nhập liệu: Tổng chi phí TCO dự án (phát triển + hạ tầng năm đầu) là $50,000. Lợi ích tài chính ròng thu được nhờ cắt giảm giờ làm nhân sự và giảm sai sót là $125,000/năm. Chỉ số ROI đạt bao nhiêu %?",
+    "options": [
+      "A. 150% ROI",
+      "B. 250% ROI",
+      "C. 100% ROI",
+      "D. 50% ROI"
+    ],
+    "answer": "A",
+    "hint": "Công thức ROI = ((Lợi ích ròng - TCO) / TCO) * 100%.",
+    "A explanation": "Lựa chọn A (150% ROI): Đúng. Lợi nhuận ròng = $125,000 - $50,000 = $75,000. ROI = ($75,000 / $50,000) * 100% = 1.5 * 100% = 150%.",
+    "B explanation": "Lựa chọn B (250% ROI): Sai do lấy trực tiếp $125,000 / $50,000 mà không trừ vốn TCO ban đầu.",
+    "C explanation": "Lựa chọn C (100% ROI): Sai do tính lợi nhuận ròng = $50,000.",
+    "D explanation": "Lựa chọn D (50% ROI): Sai do tính toán sai hệ số chia."
+  },
+  {
+    "id": "QUANT_Q44",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Áp dụng kỹ thuật Model Routing (Phân luồng mô hình): 80% các câu hỏi đơn giản được điều hướng sang Small Model (Llama 3.8B - giá $0.20/1M tokens), 20% câu hỏi phức tạp chuyển sang Large Model (Claude 3.5 - giá $3.00/1M tokens). Đơn giá trung bình (Blended Cost) trên mỗi 1M tokens là bao nhiêu?",
+    "options": [
+      "A. $0.76 / 1M tokens",
+      "B. $1.60 / 1M tokens",
+      "C. $0.50 / 1M tokens",
+      "D. $2.00 / 1M tokens"
+    ],
+    "answer": "A",
+    "hint": "Blended Cost = (80% * Giá_Small) + (20% * Giá_Large).",
+    "A explanation": "Lựa chọn A ($0.76): Đúng. Blended Cost = (0.80 * $0.20) + (0.20 * $3.00) = $0.16 + $0.60 = $0.76 / 1M tokens (giảm 75% chi phí so với việc dùng 100% Claude 3.5).",
+    "B explanation": "Lựa chọn B ($1.60): Sai do lấy trung bình cộng đơn giản: ($0.20 + $3.00) / 2 = $1.60.",
+    "C explanation": "Lựa chọn C ($0.50): Sai do tính tỷ lệ 90/10.",
+    "D explanation": "Lựa chọn D ($2.00): Sai do tính toán sai tỷ lệ."
+  },
+  {
+    "id": "QUANT_Q45",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Điểm hòa vốn (Break-even Point) về số lượng Request giữa việc trả phí Cloud API ($0.01/request) và việc Thuê máy chủ GPU riêng cố định ($2,000/tháng) là bao nhiêu requests/tháng?",
+    "options": [
+      "A. 200,000 requests/tháng",
+      "B. 100,000 requests/tháng",
+      "C. 500,000 requests/tháng",
+      "D. 50,000 requests/tháng"
+    ],
+    "answer": "A",
+    "hint": "Lấy tổng chi phí thuê GPU cố định ($2,000) chia cho đơn giá mỗi request API ($0.01).",
+    "A explanation": "Lựa chọn A (200,000 requests): Đúng. Break-even = $2,000 / $0.01 = 200,000 requests. Nếu hệ thống xử lý > 200,000 requests/tháng, việc tự thuê GPU riêng sẽ kinh tế hơn dùng API.",
+    "B explanation": "Lựa chọn B (100,000 requests): Sai do tính đơn giá $0.02/request.",
+    "C explanation": "Lựa chọn C (500,000 requests): Sai do tính đơn giá $0.004/request.",
+    "D explanation": "Lựa chọn D (50,000 requests): Sai do tính đơn giá $0.04/request."
+  },
+  {
+    "id": "QUANT_Q46",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Thêm một lớp Input Guardrail LLM (mô hình kiểm duyệt nhỏ - $0.10/1M tokens) trước LLM chính ($3.00/1M tokens). Ngăn chặn thành công 10% các cuộc tấn công Prompt Injection/Spam không cần gửi tới LLM chính. Chi phí API thực tế thay đổi như thế nào trên 1M tokens traffic?",
+    "options": [
+      "A. Tiết kiệm ròng $0.20 / 1M tokens (Chi phí mới $2.80 thay vì $3.00).",
+      "B. Tăng thêm $0.10 / 1M tokens.",
+      "C. Tiết kiệm $0.30 / 1M tokens.",
+      "D. Giữ nguyên không đổi."
+    ],
+    "answer": "A",
+    "hint": "Chi phí mới = Giá Guardrail (100% traffic) + Giá LLM chính (90% traffic còn lại). So sánh với $3.00.",
+    "A explanation": "Lựa chọn A: Đúng. Chi phí Guardrail = $0.10. Chi phí LLM chính cho 90% traffic hợp lệ = 0.90 * $3.00 = $2.70. Tổng chi phí mới = $0.10 + $2.70 = $2.80. Tiết kiệm ròng = $3.00 - $2.80 = $0.20 / 1M tokens.",
+    "B explanation": "Lựa chọn B: Sai vì không tính phần chi phí LLM chính giảm được do chặn 10% spam.",
+    "C explanation": "Lựa chọn C: Sai vì quên chưa cộng $0.10 chi phí Guardrail.",
+    "D explanation": "Lựa chọn D: Sai vì chi phí thực sự giảm."
+  },
+  {
+    "id": "QUANT_Q47",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Kỹ thuật Exact Match Caching (Cache chính xác chuỗi ký tự) có ưu và nhược điểm định lượng gì so với Semantic Caching?",
+    "options": [
+      "A. Độ trễ cực thấp (< 5ms), chi phí lookup 0$ GPU, nhưng Cache Hit Rate thấp hơn hẳn Semantic Caching (chỉ đạt ~5-10%).",
+      "B. Cache Hit Rate cao hơn Semantic Caching gấp 2 lần.",
+      "C. Tiêu tốn nhiều tài nguyên Vector DB hơn Semantic Caching.",
+      "D. Cả hai có cùng Hit Rate và Latency."
+    ],
+    "answer": "A",
+    "hint": "Exact Match chỉ cần đọ chuỗi Hash (MD5/SHA256) cực nhanh nhưng yêu cầu câu hỏi phải giống hệt từng ký tự.",
+    "A explanation": "Lựa chọn A: Đúng. Exact Match dùng Hash Map nên tra cứu cực nhanh (<5ms) và không tốn Embedding API. Tuy nhiên do yêu cầu trùng khớp 100% ký tự nên Hit Rate thấp hơn nhiều so với đọ ý nghĩa câu hỏi của Semantic Caching.",
+    "B explanation": "Lựa chọn B: Sai. Exact Match có Hit Rate thấp hơn.",
+    "C explanation": "Lựa chọn C: Sai. Exact Match không dùng Vector DB.",
+    "D explanation": "Lựa chọn D: Sai. Khác biệt lớn về bản chất kỹ thuật."
+  },
+  {
+    "id": "QUANT_Q48",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Nếu chi phí API tháng trước là $20,000. Tháng này áp dụng đồng thời cả 3 kỹ thuật: Prompt Compression (giảm 20%), Semantic Caching (Hit Rate 20%), và Model Routing (giảm 30% trên lượng request còn lại). Chi phí ước tính tháng này còn lại bao nhiêu?",
+    "options": [
+      "A. $8,960/tháng (Tiết kiệm > 55%)",
+      "B. $10,000/tháng",
+      "C. $6,000/tháng",
+      "D. $12,000/tháng"
+    ],
+    "answer": "A",
+    "hint": "Tính tích lũy các hệ số giảm: $20,000 * (1 - 0.20) * (1 - 0.20) * (1 - 0.30).",
+    "A explanation": "Lựa chọn A ($8,960): Đúng. Sau Prompt Compression: $20,000 * 0.8 = $16,000. Sau Semantic Caching: $16,000 * 0.8 = $12,800. Sau Model Routing: $12,800 * 0.7 = $8,960/tháng.",
+    "B explanation": "Lựa chọn B ($10,000): Sai do cộng đơn giản các phần phần trăm (20% + 20% + 30% = 70% -> giảm 50%).",
+    "C explanation": "Lựa chọn C ($6,000): Sai do tính giảm 70% trên tổng gốc.",
+    "D explanation": "Lựa chọn D ($12,000): Sai do bỏ qua hiệu ứng của Model Routing."
+  },
+  {
+    "id": "QUANT_Q49",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Một hợp đồng SLA cam kết độ sẵn sàng (Availability) 99.9% cho dịch vụ AI Agent API. Thời gian gián đoạn tối đa cho phép (Downtime limit) trong 1 tháng (30 ngày = 43,200 phút) là bao nhiêu?",
+    "options": [
+      "A. 43.2 phút / tháng",
+      "B. 4.32 phút / tháng",
+      "C. 432 phút / tháng",
+      "D. 100 phút / tháng"
+    ],
+    "answer": "A",
+    "hint": "Downtime allowed = Total minutes * (100% - 99.9%) = 43,200 * 0.001.",
+    "A explanation": "Lựa chọn A (43.2 phút): Đúng. Tổng số phút/tháng = 30 * 24 * 60 = 43,200 phút. Tỷ lệ Downtime cho phép = 100% - 99.9% = 0.1% = 0.001. Downtime tối đa = 43,200 * 0.001 = 43.2 phút.",
+    "B explanation": "Lựa chọn B (4.32 phút): Sai vì đây là chuẩn 99.99% (Four Nines).",
+    "C explanation": "Lựa chọn C (432 phút): Sai vì đây là chuẩn 99% (Two Nines).",
+    "D explanation": "Lựa chọn D (100 phút): Sai do làm tròn số."
+  },
+  {
+    "id": "QUANT_Q50",
+    "day": "Quantitative",
+    "day_title": "AI Engineering Quantitative & Calculations",
+    "topic": "Financial Metrics & ROI",
+    "question": "Chỉ số FinOps nào là thước đo quan trọng nhất để đánh giá hiệu quả kinh tế của một hệ thống AI Engineering khi tăng trưởng quy mô (Scale)?",
+    "options": [
+      "A. Cost per Unit Resolution / Cost per Business Outcome (Chi phí API & Hạ tầng trên mỗi tác vụ nghiệp vụ giải quyết thành công).",
+      "B. Tổng số token sinh ra hàng ngày.",
+      "C. Dung lượng đĩa cứng SSD sử dụng.",
+      "D. Số lượng tài khoản GPU instance được thuê."
+    ],
+    "answer": "A",
+    "hint": "Trong FinOps cho AI, việc chỉ đo lường giá Token không phản ánh được giá trị kinh doanh ròng (Business Value). Cần đo chi phí hoàn thành 1 tác vụ thực tế.",
+    "A explanation": "Lựa chọn A: Đúng. Cost per Business Outcome (ví dụ: $0.05 / 1 đơn hàng xử lý xong) phản ánh chính xác hiệu quả đầu tư AI. Cho dù dùng mô hình đắt hơn nhưng giải quyết trong 1 bước thành công sẽ rẻ hơn mô hình rẻ mà chạy vòng lặp sửa lỗi 10 lần.",
+    "B explanation": "Lựa chọn B: Sai. Tổng token sinh ra không đại diện cho giá trị hoàn thành công việc.",
+    "C explanation": "Lựa chọn C: Sai. Dung lượng đĩa cứng chiếm tỷ trọng chi phí rất nhỏ.",
+    "D explanation": "Lựa chọn D: Sai. Số GPU không đo lường hiệu quả đầu ra."
+  }
+]
