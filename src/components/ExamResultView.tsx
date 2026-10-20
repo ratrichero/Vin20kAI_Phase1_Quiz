@@ -121,7 +121,9 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
               <span className="text-slate-500 text-2xl font-normal">/100</span>
             </div>
             <div className="text-sm font-semibold text-slate-300 mt-1">Điểm số: {percentage}%</div>
-            <div className="text-xs text-slate-500 mt-0.5">Tiêu chuẩn đạt: $\ge 70\%$</div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              Tiêu chuẩn đạt: <strong className="font-semibold text-slate-400">≥ 70 điểm</strong>
+            </div>
           </div>
         </div>
 

@@ -297,7 +297,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
 
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
               <div className="text-xs text-slate-400">Tiêu chuẩn đạt</div>
-              <div className="text-xl font-bold text-emerald-400 font-mono mt-0.5">$\ge 70$ điểm</div>
+              <div className="text-xl font-bold text-emerald-400 font-mono mt-0.5">≥ 70 điểm</div>
             </div>
 
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
