@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Question } from '../types/quiz';
 import { PracticeHistoryMap, toggleBookmark, recordPracticeAnswer } from '../utils/storage';
+import { OptionExplanations } from './OptionExplanations';
 import { playClickSound, playCorrectSound, playIncorrectSound } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import {
@@ -549,31 +550,10 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
             </div>
           )}
 
-          {/* Detailed Explanation for Right and Wrong Answers */}
+          {/* Per-option explanation details */}
           {showExplanation && (
-            <div className="p-4 sm:p-5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-3 text-xs leading-relaxed">
-              <div className="flex items-center gap-2 font-bold text-white text-sm">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Giải thích chi tiết cho chủ đề: {currentQ.topic}</span>
-              </div>
-
-              {/* Correct answer reasoning */}
-              <div className="p-3 rounded-lg bg-emerald-950/30 border border-emerald-700/40 text-emerald-200">
-                <strong className="text-emerald-300 block font-semibold mb-0.5">
-                  Tại sao phương án {currentQ.answer} là chuẩn xác nhất:
-                </strong>
-                <p className="text-slate-200">{currentQ.explanation}</p>
-              </div>
-
-              {/* Analysis of distractor / wrong options */}
-              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 space-y-1.5">
-                <strong className="text-slate-200 block font-semibold">
-                  Phân tích các phương án còn lại (Anti-patterns & Distractors):
-                </strong>
-                <p className="text-slate-400 text-xs">
-                  Các phương án khác đưa ra góc nhìn bổ trợ hoặc giả định không tối ưu trong điều kiện triển khai thực tế. Trong môi trường Production, kiến trúc sư cần ưu tiên lựa chọn phương án {currentQ.answer} để đảm bảo tính ổn định, tối ưu chi phí và độ chính xác của hệ thống AI.
-                </p>
-              </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 sm:p-5">
+              <OptionExplanations question={currentQ} />
             </div>
           )}
 

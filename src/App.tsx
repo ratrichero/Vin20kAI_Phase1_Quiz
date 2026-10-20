@@ -281,6 +281,7 @@ export default function App() {
         {reviewingExam ? (
           <ExamResultView
             result={reviewingExam}
+            questions={questions}
             bookmarks={bookmarks}
             onUpdateBookmarks={handleUpdateBookmarks}
             onRetakeExam={handleStartExam}

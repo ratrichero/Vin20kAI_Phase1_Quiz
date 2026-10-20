@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { Question } from '../types/quiz';
 import { toggleBookmark } from '../utils/storage';
+import { getAllOptionExplanations } from '../utils/questionExplanations';
 import { playClickSound } from '../utils/audio';
+import { OptionExplanations } from './OptionExplanations';
 import {
   Search,
   Filter,
   Star,
   ChevronDown,
   ChevronUp,
-  CheckCircle2,
   BookOpen,
   Lightbulb,
   HelpCircle,
@@ -71,7 +72,9 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
         const inId = q.id.toLowerCase().includes(qLower);
         const inQuestion = q.question.toLowerCase().includes(qLower);
         const inTopic = q.topic.toLowerCase().includes(qLower);
-        const inExplanation = q.explanation.toLowerCase().includes(qLower);
+        const inExplanation = [q.explanation, ...getAllOptionExplanations(q)].some((explanation) =>
+          explanation.toLowerCase().includes(qLower),
+        );
         const inOptions = q.options.some((opt) => opt.toLowerCase().includes(qLower));
 
         if (!inId && !inQuestion && !inTopic && !inExplanation && !inOptions) {
@@ -305,16 +308,8 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                       </div>
                     )}
 
-                    {/* Explanation */}
-                    {q.explanation && (
-                      <div className="p-3.5 rounded-lg bg-indigo-950/40 border border-indigo-600/30 text-slate-200 space-y-1">
-                        <div className="flex items-center gap-1.5 font-bold text-indigo-300 uppercase tracking-wider text-[11px]">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Đáp án đúng: Phương án {q.answer}</span>
-                        </div>
-                        <p>{q.explanation}</p>
-                      </div>
-                    )}
+                    {/* Per-option explanations */}
+                    <OptionExplanations question={q} />
                   </div>
                 )}
               </div>

@@ -79,7 +79,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              Hệ thống ôn luyện 750 câu quiz & Thi thử toàn diện
+              Hệ thống ôn luyện & Thi thử toàn diện
             </h1>
 
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">

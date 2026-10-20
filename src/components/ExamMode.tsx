@@ -358,6 +358,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
     return (
       <ExamResultView
         result={examResult}
+        questions={allQuestions}
         bookmarks={bookmarks}
         onUpdateBookmarks={onUpdateBookmarks}
         onRetakeExam={startNewExam}

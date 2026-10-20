@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { ExamResult } from '../types/quiz';
+import { ExamResult, Question } from '../types/quiz';
 import { toggleBookmark } from '../utils/storage';
+import { OptionExplanations } from './OptionExplanations';
 import {
   Award,
   Clock,
@@ -14,11 +15,11 @@ import {
   ChevronUp,
   BarChart2,
   AlertTriangle,
-  Lightbulb,
 } from 'lucide-react';
 
 interface ExamResultViewProps {
   result: ExamResult;
+  questions: Question[];
   bookmarks: string[];
   onUpdateBookmarks: (bms: string[]) => void;
   onRetakeExam: () => void;
@@ -27,6 +28,7 @@ interface ExamResultViewProps {
 
 export const ExamResultView: React.FC<ExamResultViewProps> = ({
   result,
+  questions,
   bookmarks,
   onUpdateBookmarks,
   onRetakeExam,
@@ -36,6 +38,10 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
 
   const percentage = Math.round((result.score / result.totalQuestions) * 100);
+  const questionById = useMemo(
+    () => new Map(questions.map((question) => [question.id, question] as const)),
+    [questions],
+  );
   const isPass = percentage >= 70;
   const isHonor = percentage >= 85;
 
@@ -230,6 +236,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
           {filteredAnswers.map((item, index) => {
             const isExpanded = expandedQuestionId === item.questionId;
             const isBookmarked = bookmarks.includes(item.questionId);
+            const question = questionById.get(item.questionId);
 
             return (
               <div
@@ -308,15 +315,21 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
                       Liên quan đến chuyên đề: <span className="text-indigo-300">{item.day} - {item.topic}</span>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-indigo-950/40 border border-indigo-700/40 text-indigo-200">
-                      <div className="flex items-center gap-1.5 font-bold text-indigo-300 text-[11px] uppercase tracking-wider mb-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Đáp án chuẩn xác là phương án {item.correctOption}</span>
-                      </div>
-                      <p className="text-slate-200 text-xs leading-relaxed">
-                        Theo nội dung bài giảng {item.day}, phương án {item.correctOption} tuân thủ đúng nguyên lý vận hành chuẩn, tối ưu hóa các trade-offs cốt lõi (Latency - Cost - Quality) và đáp ứng yêu cầu Production-ready.
+                    {question ? (
+                      <>
+                        <div className="rounded-lg border border-slate-700/80 bg-slate-950/60 p-3">
+                          <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-indigo-300">
+                            Nội dung câu hỏi
+                          </div>
+                          <p className="text-sm leading-relaxed text-slate-200">{question.question}</p>
+                        </div>
+                        <OptionExplanations question={question} />
+                      </>
+                    ) : (
+                      <p className="rounded-lg border border-amber-700/40 bg-amber-950/20 p-3 text-amber-200">
+                        Không tìm thấy câu hỏi này trong bộ dữ liệu hiện tại nên chưa thể hiển thị giải thích theo từng phương án.
                       </p>
-                    </div>
+                    )}
                   </div>
                 )}
               </div>

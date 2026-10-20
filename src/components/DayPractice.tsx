@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Question } from '../types/quiz';
 import { PracticeHistoryMap, toggleBookmark, recordPracticeAnswer, clearPracticeHistoryForDay } from '../utils/storage';
+import { OptionExplanations } from './OptionExplanations';
 import { playCorrectSound, playIncorrectSound, playClickSound } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import {
@@ -18,7 +19,6 @@ import {
   Award,
   Sparkles,
   Layers,
-  Check,
 } from 'lucide-react';
 
 interface DayPracticeProps {
@@ -424,16 +424,9 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
           )}
 
           {/* Explanation Box */}
-          {showExplanation && currentQ.explanation && (
-            <div className="space-y-2 rounded-xl border border-indigo-600/30 bg-indigo-950/30 p-3 text-sm leading-relaxed text-indigo-100 animate-fadeIn sm:p-5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2 font-semibold text-indigo-300 text-xs uppercase tracking-wider">
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Đáp án chuẩn xác: Lựa chọn {currentQ.answer}</span>
-                </div>
-                <span className="text-[11px] font-mono text-indigo-400">{currentQ.topic}</span>
-              </div>
-              <p className="text-slate-200 text-sm leading-relaxed">{currentQ.explanation}</p>
+          {showExplanation && (
+            <div className="rounded-xl border border-indigo-600/30 bg-indigo-950/30 p-3 animate-fadeIn sm:p-5">
+              <OptionExplanations question={currentQ} />
             </div>
           )}
 

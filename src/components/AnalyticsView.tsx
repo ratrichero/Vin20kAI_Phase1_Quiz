@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { Question, ExamResult, DaySummary } from '../types/quiz';
 import { PracticeHistoryMap, getExamHistory, resetAllProgress, toggleBookmark } from '../utils/storage';
 import { playClickSound } from '../utils/audio';
+import { OptionExplanations } from './OptionExplanations';
 import {
   BarChart3,
   Award,
   Clock,
-  CheckCircle2,
-  XCircle,
   Star,
   AlertTriangle,
   RotateCcw,
@@ -321,10 +320,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
                   <h4 className="text-sm sm:text-base font-bold text-white leading-relaxed">{q.question}</h4>
 
-                  <div className="p-3 rounded-lg bg-indigo-950/30 border border-indigo-700/30 text-xs text-slate-200">
-                    <strong className="text-emerald-400 block mb-1">Đáp án đúng: Phương án {q.answer}</strong>
-                    <p>{q.explanation}</p>
-                  </div>
+                  <OptionExplanations question={q} />
                 </div>
               ))}
             </div>

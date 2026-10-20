@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Question } from '../types/quiz';
 import { PracticeHistoryMap, toggleBookmark, markMistakeResolved, recordPracticeAnswer } from '../utils/storage';
+import { OptionExplanations } from './OptionExplanations';
 import { playClickSound, playCorrectSound, playIncorrectSound } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import {
@@ -19,7 +20,6 @@ import {
   Sparkles,
   Trophy,
   AlertCircle,
-  Check,
   Zap,
 } from 'lucide-react';
 
@@ -429,14 +429,10 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
             </div>
           )}
 
-          {/* Detailed Explanation */}
+          {/* Per-option explanation details */}
           {showExplanation && (
-            <div className="p-4 sm:p-5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3 text-xs leading-relaxed animate-fadeIn">
-              <div className="flex items-center gap-2 font-bold text-white text-sm">
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span>Đáp án chuẩn xác là phương án: {currentQ.answer}</span>
-              </div>
-              <p className="text-slate-200 text-xs sm:text-sm">{currentQ.explanation}</p>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 animate-fadeIn sm:p-5">
+              <OptionExplanations question={currentQ} />
             </div>
           )}
 

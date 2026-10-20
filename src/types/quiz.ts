@@ -7,6 +7,10 @@ export interface Question {
   options: string[]; // 4 options
   answer: 'A' | 'B' | 'C' | 'D' | string;
   hint: string;
+  'A explanation'?: string;
+  'B explanation'?: string;
+  'C explanation'?: string;
+  'D explanation'?: string;
   explanation: string;
 }
 
