@@ -236,8 +236,8 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
   // STAGE 1: CONFIGURATION
   if (stage === 'config') {
     return (
-      <div className="max-w-4xl mx-auto space-y-6 pb-16">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+      <div className="mx-auto max-w-4xl space-y-5 pb-16 sm:space-y-6">
+        <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl sm:space-y-6 sm:p-6 lg:p-8">
           {/* Header */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider">
@@ -328,7 +328,7 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
                 value={topicSearch}
                 onChange={(e) => setTopicSearch(e.target.value)}
                 placeholder="Lọc chủ đề theo tên hoặc Day (ví dụ: ReAct, Attention, RAG, Chunking, Gate...)"
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                className="min-h-11 w-full rounded-xl border border-slate-800 bg-slate-950 py-2 pl-9 pr-3 text-base text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none sm:text-sm"
               />
             </div>
 
@@ -399,23 +399,23 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
     const isCorrect = selectedOpt?.toUpperCase() === currentQ.answer.toUpperCase();
 
     return (
-      <div className="max-w-4xl mx-auto space-y-6 pb-20">
+      <div className="mx-auto max-w-4xl space-y-5 pb-16 sm:space-y-6 sm:pb-20">
         {/* Top Header */}
-        <div className="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-4">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900 p-3 sm:p-4">
+          <div className="flex min-w-0 items-center gap-3">
             <button
               onClick={() => setStage('config')}
-              className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+              className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg bg-slate-800 p-1.5 text-slate-300 hover:text-white"
               title="Cấu hình lại chủ đề"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
 
-            <div>
+            <div className="min-w-0">
               <div className="text-xs font-mono text-indigo-400 font-semibold">
                 Luyện tập tùy chỉnh: Câu {currentIndex + 1} / {practiceQuestions.length}
               </div>
-              <h3 className="text-sm sm:text-base font-bold text-white line-clamp-1">
+              <h3 className="text-sm font-bold text-white line-clamp-1 sm:text-base">
                 Chủ đề: {currentQ.topic} ({currentQ.day})
               </h3>
             </div>
@@ -424,7 +424,7 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleToggleBookmark}
-              className={`p-1.5 rounded-lg border transition-colors ${
+              className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg border p-1.5 transition-colors ${
                 isBookmarked
                   ? 'bg-amber-950/60 text-amber-400 border-amber-600/60'
                   : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'
@@ -445,15 +445,15 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
         </div>
 
         {/* Question Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+        <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl sm:space-y-6 sm:p-6 lg:p-8">
           {/* Question Prompt */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <span className="font-mono text-indigo-400 font-bold">{currentQ.id}</span>
-              <span>·</span>
-              <span className="text-slate-300">{currentQ.topic}</span>
+            <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-400">
+              <span className="shrink-0 font-mono font-bold text-indigo-400">{currentQ.id}</span>
+              <span aria-hidden="true">·</span>
+              <span className="min-w-0 break-words text-slate-300">{currentQ.topic}</span>
             </div>
-            <h3 className="text-lg sm:text-xl font-bold text-white leading-relaxed">
+            <h3 className="break-words text-base font-bold leading-relaxed text-white sm:text-xl">
               {currentQ.question}
             </h3>
           </div>
@@ -487,7 +487,7 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
                 <button
                   key={optIndex}
                   onClick={() => handleSelectOption(optKey)}
-                  className={`w-full text-left p-4 rounded-xl border transition-all duration-150 flex items-start gap-3.5 cursor-pointer active:scale-[0.99] ${cardClasses}`}
+                  className={`flex min-h-11 w-full items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-150 active:scale-[0.99] sm:gap-3.5 sm:p-4 ${cardClasses}`}
                 >
                   <span
                     className={`w-7 h-7 rounded-lg border flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-colors ${badgeClasses}`}
@@ -495,7 +495,7 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
                     {optKey}
                   </span>
 
-                  <span className="text-sm sm:text-base leading-relaxed pt-0.5 flex-1">
+                  <span className="min-w-0 flex-1 break-words pt-0.5 text-sm leading-relaxed sm:text-base">
                     {optionText}
                   </span>
 
@@ -514,26 +514,28 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={() => setShowHint((prev) => !prev)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`flex min-h-10 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-colors sm:text-xs ${
                 showHint
                   ? 'bg-amber-950/60 text-amber-300 border-amber-700/60'
                   : 'bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
               <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-              <span>{showHint ? 'Ẩn gợi ý' : 'Gợi ý xem lại (Phím H)'}</span>
+              <span>{showHint ? 'Ẩn gợi ý' : 'Gợi ý'}</span>
+              <span className="hidden sm:inline">{showHint ? '' : ' xem lại (Phím H)'}</span>
             </button>
 
             <button
               onClick={() => setShowExplanation((prev) => !prev)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`flex min-h-10 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-colors sm:text-xs ${
                 showExplanation
                   ? 'bg-indigo-950/60 text-indigo-300 border-indigo-700/60'
                   : 'bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
               <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
-              <span>{showExplanation ? 'Ẩn phân tích đáp án' : 'Xem phân tích chi tiết đúng/sai'}</span>
+              <span className="sm:hidden">{showExplanation ? 'Ẩn phân tích' : 'Phân tích'}</span>
+              <span className="hidden sm:inline">{showExplanation ? 'Ẩn phân tích đáp án' : 'Xem phân tích chi tiết đúng/sai'}</span>
             </button>
           </div>
 
@@ -576,11 +578,11 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
           )}
 
           {/* Bottom Nav */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-2 border-t border-slate-800 pt-4 sm:gap-4">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium border transition-colors ${
+              className={`flex min-h-11 items-center gap-1 rounded-xl border px-2.5 py-2 text-[11px] font-medium transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
                 currentIndex === 0
                   ? 'border-slate-800 text-slate-600 cursor-not-allowed'
                   : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200'
@@ -592,16 +594,17 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 active:scale-95"
+              className="flex min-h-11 items-center gap-1 rounded-xl bg-indigo-600 px-2.5 py-2 text-[11px] font-semibold text-white shadow-md shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-95 sm:gap-1.5 sm:px-5 sm:text-sm"
             >
-              <span>{currentIndex === practiceQuestions.length - 1 ? 'Hoàn thành bài tập' : 'Câu tiếp theo'}</span>
+              <span className="sm:hidden">{currentIndex === practiceQuestions.length - 1 ? 'Hoàn thành' : 'Tiếp theo'}</span>
+              <span className="hidden sm:inline">{currentIndex === practiceQuestions.length - 1 ? 'Hoàn thành bài tập' : 'Câu tiếp theo'}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Matrix Navigator (10 - 15 questions) */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900 p-3 sm:gap-4 sm:p-4">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
             <Layers className="w-4 h-4 text-indigo-400" />
             <span>Danh mục câu hỏi:</span>
@@ -626,7 +629,7 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
                     playClickSound();
                     setCurrentIndex(idx);
                   }}
-                  className={`w-8 h-8 rounded-lg text-xs font-mono font-semibold flex items-center justify-center transition-all ${bg} ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg font-mono text-xs font-semibold transition-all sm:h-8 sm:w-8 ${bg} ${
                     isCurr ? 'ring-2 ring-indigo-400 scale-105 z-10' : ''
                   }`}
                 >

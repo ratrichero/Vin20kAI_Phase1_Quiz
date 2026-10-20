@@ -130,7 +130,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
               setCurrentPage(1);
             }}
             placeholder="Tìm kiếm nội dung câu hỏi, chủ đề, keyword (ví dụ: Self-Attention, MCP, RAGAS, Cache...)"
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="min-h-11 w-full rounded-xl border border-slate-800 bg-slate-950 py-2.5 pl-10 pr-4 text-base text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
           />
         </div>
 
@@ -145,7 +145,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                 setSelectedTopic('all');
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="min-h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-base text-slate-200 focus:border-indigo-500 focus:outline-none sm:text-xs"
             >
               <option value="all">Tất cả các Day (01 - 15)</option>
               {uniqueDays.map((d) => (
@@ -164,7 +164,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                 setSelectedTopic(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-indigo-500 truncate"
+              className="min-h-11 w-full min-w-0 truncate rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-base text-slate-200 focus:border-indigo-500 focus:outline-none sm:text-xs"
             >
               <option value="all">Tất cả các chủ đề ({availableTopics.length})</option>
               {availableTopics.map((t) => (
@@ -182,7 +182,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                 setBookmarkedOnly((prev) => !prev);
                 setCurrentPage(1);
               }}
-              className={`w-full py-2 px-3 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
+              className={`flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
                 bookmarkedOnly
                   ? 'bg-amber-950/60 text-amber-300 border-amber-600/50'
                   : 'bg-slate-950 text-slate-400 hover:text-slate-200 border-slate-800'
@@ -213,14 +213,14 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
             return (
               <div
                 key={q.id}
-                className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3.5 hover:border-slate-700 transition-all shadow-md"
+                className="space-y-3.5 rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-md transition-all hover:border-slate-700 sm:p-5"
               >
                 {/* Question Top Row */}
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-indigo-400">{q.id}</span>
-                    <span>·</span>
-                    <span className="font-semibold text-slate-300">{q.day}: {q.day_title}</span>
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="shrink-0 font-mono font-bold text-indigo-400">{q.id}</span>
+                    <span aria-hidden="true">·</span>
+                    <span className="min-w-0 break-words font-semibold text-slate-300">{q.day}: {q.day_title}</span>
                     <span className="hidden sm:inline">·</span>
                     <span className="hidden sm:inline text-slate-400">{q.topic}</span>
                   </div>
@@ -228,7 +228,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onPracticeDay(q.day)}
-                      className="text-[11px] text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-medium mr-1"
+                      className="flex min-h-10 items-center gap-1 whitespace-nowrap text-[11px] font-medium text-indigo-400 transition-colors hover:text-indigo-300 sm:mr-1"
                       title={`Mở làm toàn bộ 50 câu của ${q.day}`}
                     >
                       <span>Luyện {q.day}</span>
@@ -237,7 +237,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
 
                     <button
                       onClick={() => handleToggleBookmark(q.id)}
-                      className={`p-1 rounded text-slate-500 hover:text-amber-400 transition-colors ${
+                      className={`flex min-h-10 min-w-10 items-center justify-center rounded text-slate-500 transition-colors hover:text-amber-400 ${
                         isStarred ? 'text-amber-400' : ''
                       }`}
                       title={isStarred ? 'Bỏ lưu' : 'Lưu câu hỏi'}
@@ -248,7 +248,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                 </div>
 
                 {/* Prompt */}
-                <h4 className="text-base font-bold text-white leading-relaxed">{q.question}</h4>
+                <h4 className="break-words text-base font-bold leading-relaxed text-white sm:text-lg">{q.question}</h4>
 
                 {/* Options Preview */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -272,23 +272,23 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                         >
                           {optKey}
                         </span>
-                        <span className="leading-snug">{opt}</span>
+                        <span className="min-w-0 flex-1 break-words leading-snug">{opt}</span>
                       </div>
                     );
                   })}
                 </div>
 
                 {/* Explanation Accordion Toggle */}
-                <div className="pt-2 flex items-center justify-between border-t border-slate-800/60 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/60 pt-2 text-xs">
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : q.id)}
-                    className="flex items-center gap-1.5 font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                    className="flex min-h-10 items-center gap-1.5 font-medium text-indigo-400 transition-colors hover:text-indigo-300"
                   >
                     <span>{isExpanded ? 'Ẩn giải thích & đáp án' : 'Xem đáp án & giải thích chi tiết'}</span>
                     {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   </button>
 
-                  <span className="text-[11px] text-slate-500 font-mono">Chủ đề: {q.topic}</span>
+                  <span className="hidden text-[11px] font-mono text-slate-500 sm:inline">Chủ đề: {q.topic}</span>
                 </div>
 
                 {/* Expanded Box */}
@@ -325,7 +325,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-4 text-xs text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 text-xs text-slate-400">
           <div>
             Trang <strong className="text-white">{currentPage}</strong> / {totalPages}
           </div>
@@ -334,7 +334,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className={`px-3 py-1.5 rounded-lg border font-medium ${
+              className={`min-h-10 rounded-lg border px-2.5 py-1.5 font-medium transition-colors sm:px-3 ${
                 currentPage === 1
                   ? 'border-slate-800 text-slate-600 cursor-not-allowed'
                   : 'border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200'
@@ -346,7 +346,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className={`px-3 py-1.5 rounded-lg border font-medium ${
+              className={`min-h-10 rounded-lg border px-2.5 py-1.5 font-medium transition-colors sm:px-3 ${
                 currentPage === totalPages
                   ? 'border-slate-800 text-slate-600 cursor-not-allowed'
                   : 'border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200'

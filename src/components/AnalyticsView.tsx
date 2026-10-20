@@ -119,10 +119,10 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 text-sm">
+      <div className="mobile-nav-scroll flex items-center gap-2 overflow-x-auto border-b border-slate-800 text-sm">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`pb-3 px-3 font-semibold border-b-2 transition-colors ${
+          className={`flex min-h-11 shrink-0 items-center whitespace-nowrap border-b-2 px-3 pb-3 font-semibold transition-colors ${
             activeTab === 'overview'
               ? 'border-indigo-500 text-indigo-300'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -133,7 +133,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
         <button
           onClick={() => setActiveTab('bookmarks')}
-          className={`pb-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
+          className={`flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-3 pb-3 font-semibold transition-colors ${
             activeTab === 'bookmarks'
               ? 'border-indigo-500 text-indigo-300'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -147,7 +147,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
         <button
           onClick={() => setActiveTab('exams')}
-          className={`pb-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
+          className={`flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-3 pb-3 font-semibold transition-colors ${
             activeTab === 'exams'
               ? 'border-indigo-500 text-indigo-300'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -164,8 +164,8 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {/* Top 4 KPI Metrics */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-1">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-1 sm:p-5">
               <span className="text-xs text-slate-400 font-medium">Đã trả lời</span>
               <div className="text-2xl sm:text-3xl font-black text-white font-mono">
                 {totalAnswered} <span className="text-sm font-normal text-slate-500">/ 750</span>
@@ -173,13 +173,13 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               <div className="text-[11px] text-indigo-400 font-mono mt-1">{progressPercent}% kho câu hỏi</div>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-1">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-1 sm:p-5">
               <span className="text-xs text-slate-400 font-medium">Số câu trả lời đúng</span>
               <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">{totalCorrect}</div>
               <div className="text-[11px] text-slate-400 mt-1">Đạt tiêu chuẩn sản xuất</div>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-1">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-1 sm:p-5">
               <span className="text-xs text-slate-400 font-medium">Độ chính xác trung bình</span>
               <div className="text-2xl sm:text-3xl font-black text-indigo-400 font-mono">
                 {overallAccuracy}%
@@ -189,7 +189,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               </div>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-1">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-1 sm:p-5">
               <span className="text-xs text-slate-400 font-medium">Số lượt thi thử</span>
               <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">
                 {examHistory.length}

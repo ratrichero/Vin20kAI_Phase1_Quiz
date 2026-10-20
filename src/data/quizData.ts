@@ -1,7 +1,7 @@
 import { Question, DaySummary } from '../types/quiz';
 
 // Fallback in case fetch needs relative path or during dev
-const QUIZ_ASSET_URL = '/assets/aistudio/Master_Quiz_750_Questions_432da31c.json';
+const QUIZ_ASSET_URL = '/assets/aistudio/Master_Quiz_750_Questions__1__91ce19a6.json';
 
 let cachedQuestions: Question[] | null = null;
 let loadPromise: Promise<Question[]> | null = null;
@@ -28,7 +28,7 @@ export const loadAllQuestions = async (): Promise<Question[]> => {
       console.error('Error loading quiz dataset:', err);
       // Fallback try with ./assets prefix if deployed
       try {
-        const fallbackRes = await fetch('./assets/aistudio/Master_Quiz_750_Questions_432da31c.json');
+        const fallbackRes = await fetch('./assets/aistudio/Master_Quiz_750_Questions__1__91ce19a6.json');
         const fallbackData = await fallbackRes.json();
         cachedQuestions = fallbackData;
         return fallbackData;

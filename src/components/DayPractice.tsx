@@ -214,36 +214,36 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
   }, [dayId]);
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="mx-auto w-full max-w-6xl space-y-5 pb-16 sm:space-y-6 sm:pb-20">
       {/* Top Header Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/80 p-3 sm:flex-row sm:items-center sm:gap-4 sm:p-4">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             onClick={onBack}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors flex items-center justify-center"
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg bg-slate-800 p-2 text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
             title="Quay lại danh sách Day"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/50">
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="shrink-0 rounded border border-indigo-800/50 bg-indigo-950 px-2 py-0.5 font-mono text-xs font-bold text-indigo-300">
                 {dayId}
               </span>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">{dayTitle}</h2>
+              <h2 className="min-w-0 truncate text-base font-bold tracking-tight text-white sm:text-lg">{dayTitle}</h2>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="mt-0.5 text-xs text-slate-400">
               Câu {currentIndex + 1} / {questions.length} · Đã làm {answeredCount}/50 ({accuracy}% đúng)
             </p>
           </div>
         </div>
 
         {/* Action Toggles */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
             onClick={() => setInstantFeedback((prev) => !prev)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 ${
+            className={`flex min-h-10 items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-medium transition-colors sm:px-3 sm:text-xs ${
               instantFeedback
                 ? 'bg-emerald-950/40 text-emerald-300 border-emerald-700/50'
                 : 'bg-slate-800 text-slate-400 border-slate-700'
@@ -251,12 +251,13 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
             title="Bật/tắt hiện đáp án và giải thích ngay khi chọn"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>{instantFeedback ? 'Xem đáp án ngay: Bật' : 'Xem đáp án ngay: Tắt'}</span>
+            <span className="sm:hidden">Đáp án: {instantFeedback ? 'Bật' : 'Tắt'}</span>
+            <span className="hidden sm:inline">Xem đáp án ngay: {instantFeedback ? 'Bật' : 'Tắt'}</span>
           </button>
 
           <button
             onClick={() => setSoundEnabled((prev) => !prev)}
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-slate-700 transition-colors"
+            className="flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 p-1.5 text-slate-400 transition-colors hover:text-white"
             title={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4 text-indigo-400" /> : <VolumeX className="w-4 h-4" />}
@@ -264,7 +265,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
           <button
             onClick={handleToggleBookmark}
-            className={`p-1.5 rounded-lg border transition-colors ${
+            className={`flex min-h-10 min-w-10 items-center justify-center rounded-lg border p-1.5 transition-colors ${
               isBookmarked
                 ? 'bg-amber-950/50 text-amber-400 border-amber-600/50'
                 : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'
@@ -276,7 +277,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
           <button
             onClick={() => setShowSummaryModal(true)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-600/40 transition-colors flex items-center gap-1.5"
+            className="flex min-h-10 items-center gap-1.5 rounded-lg border border-indigo-500/40 bg-indigo-600/30 px-3 text-xs font-medium text-indigo-300 transition-colors hover:bg-indigo-600/40"
           >
             <Award className="w-3.5 h-3.5" />
             <span>Tổng kết</span>
@@ -294,13 +295,13 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
       {/* Main Question Card and Options */}
       {currentQ && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative">
+        <div className="relative space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl sm:space-y-6 sm:p-6 lg:p-8">
           {/* Question Meta Header */}
           <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-slate-400">
-              <span className="font-mono text-indigo-400 font-semibold">{currentQ.id}</span>
-              <span>·</span>
-              <span className="text-slate-300 font-medium">{currentQ.topic}</span>
+            <div className="flex min-w-0 items-center gap-2 text-slate-400">
+              <span className="shrink-0 font-mono font-semibold text-indigo-400">{currentQ.id}</span>
+              <span aria-hidden="true">·</span>
+              <span className="min-w-0 break-words font-medium text-slate-300">{currentQ.topic}</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -321,7 +322,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
           {/* Question Prompt */}
           <div className="space-y-2">
-            <h3 className="text-lg sm:text-xl font-bold text-white leading-relaxed tracking-tight">
+            <h3 className="break-words text-base font-bold leading-relaxed tracking-tight text-white sm:text-xl">
               {currentQ.question}
             </h3>
           </div>
@@ -355,7 +356,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
                 <button
                   key={optIndex}
                   onClick={() => handleSelectOption(optKey)}
-                  className={`w-full text-left p-4 sm:p-4.5 rounded-xl border transition-all duration-150 flex items-start gap-3.5 group cursor-pointer active:scale-[0.99] ${cardClasses}`}
+                  className={`group flex min-h-11 w-full items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-150 active:scale-[0.99] sm:gap-3.5 sm:p-4 ${cardClasses}`}
                 >
                   <span
                     className={`w-7 h-7 rounded-lg border flex items-center justify-center text-xs font-mono shrink-0 transition-colors ${badgeClasses}`}
@@ -363,7 +364,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
                     {optKey}
                   </span>
 
-                  <span className="text-sm sm:text-base leading-relaxed pt-0.5 flex-1">{optionText}</span>
+                  <span className="min-w-0 flex-1 break-words pt-0.5 text-sm leading-relaxed sm:text-base">{optionText}</span>
 
                   {savedRecord && isCorrectOption && (
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
@@ -383,14 +384,15 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
                 if (soundEnabled) playClickSound();
                 setShowHint((prev) => !prev);
               }}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+              className={`flex min-h-10 items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium transition-colors sm:text-xs ${
                 showHint
                   ? 'bg-amber-950/60 text-amber-300 border border-amber-700/50'
                   : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/70'
               }`}
             >
               <Lightbulb className="w-4 h-4 text-amber-400" />
-              <span>{showHint ? 'Ẩn gợi ý xem lại' : 'Hiện gợi ý xem lại (Phím H)'}</span>
+              <span className="sm:hidden">{showHint ? 'Ẩn gợi ý' : 'Gợi ý'}</span>
+              <span className="hidden sm:inline">{showHint ? 'Ẩn gợi ý xem lại' : 'Hiện gợi ý xem lại (Phím H)'}</span>
             </button>
 
             <button
@@ -398,14 +400,15 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
                 if (soundEnabled) playClickSound();
                 setShowExplanation((prev) => !prev);
               }}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+              className={`flex min-h-10 items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium transition-colors sm:text-xs ${
                 showExplanation
                   ? 'bg-indigo-950/60 text-indigo-300 border border-indigo-700/50'
                   : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/70'
               }`}
             >
               <HelpCircle className="w-4 h-4 text-indigo-400" />
-              <span>{showExplanation ? 'Ẩn giải thích chi tiết' : 'Xem giải thích chi tiết'}</span>
+              <span className="sm:hidden">{showExplanation ? 'Ẩn giải thích' : 'Giải thích'}</span>
+              <span className="hidden sm:inline">{showExplanation ? 'Ẩn giải thích chi tiết' : 'Xem giải thích chi tiết'}</span>
             </button>
           </div>
 
@@ -422,8 +425,8 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
           {/* Explanation Box */}
           {showExplanation && currentQ.explanation && (
-            <div className="p-4 sm:p-5 rounded-xl bg-indigo-950/30 border border-indigo-600/30 text-indigo-100 text-sm leading-relaxed space-y-2 animate-fadeIn">
-              <div className="flex items-center justify-between">
+            <div className="space-y-2 rounded-xl border border-indigo-600/30 bg-indigo-950/30 p-3 text-sm leading-relaxed text-indigo-100 animate-fadeIn sm:p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 font-semibold text-indigo-300 text-xs uppercase tracking-wider">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Đáp án chuẩn xác: Lựa chọn {currentQ.answer}</span>
@@ -435,11 +438,11 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
           )}
 
           {/* Navigation Controls */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-2 border-t border-slate-800 pt-4 sm:gap-4">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium border transition-colors ${
+              className={`flex min-h-11 items-center gap-1 rounded-xl border px-2.5 py-2 text-[11px] font-medium transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
                 currentIndex === 0
                   ? 'border-slate-800 text-slate-600 cursor-not-allowed'
                   : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200'
@@ -455,7 +458,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition-all active:scale-95"
+              className="flex min-h-11 items-center gap-1 rounded-xl bg-indigo-600 px-2.5 py-2 text-[11px] font-semibold text-white shadow-md shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-95 sm:gap-1.5 sm:px-5 sm:text-sm"
             >
               <span>{currentIndex === questions.length - 1 ? 'Xem kết quả Day' : 'Câu tiếp theo'}</span>
               <ChevronRight className="w-4 h-4" />
@@ -465,7 +468,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
       )}
 
       {/* Question Quick Jump Matrix (1 to 50) */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-3">
+      <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2 text-slate-300 font-semibold">
             <Layers className="w-4 h-4 text-indigo-400" />
@@ -493,7 +496,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
         </div>
 
         {/* Matrix Grid */}
-        <div className="grid grid-cols-10 sm:grid-cols-10 md:grid-cols-25 gap-1.5 pt-1">
+        <div className="grid grid-cols-6 gap-1.5 pt-1 min-[480px]:grid-cols-8 sm:grid-cols-10 lg:grid-cols-15 2xl:grid-cols-25">
           {questions.map((q, qIdx) => {
             const record = practiceHistory[q.id];
             const isCurr = qIdx === currentIndex;
@@ -513,7 +516,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
                   if (soundEnabled) playClickSound();
                   setCurrentIndex(qIdx);
                 }}
-                className={`relative h-8 rounded-lg text-xs font-mono flex items-center justify-center transition-all ${bg} ${
+                className={`relative flex h-11 items-center justify-center rounded-lg font-mono text-xs transition-all 2xl:h-9 ${bg} ${
                   isCurr ? 'ring-2 ring-indigo-400 font-extrabold scale-105 z-10' : ''
                 }`}
                 title={`Câu ${qIdx + 1}: ${q.topic}`}
@@ -530,8 +533,8 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
       {/* Summary Modal */}
       {showSummaryModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 sm:p-7 space-y-6 shadow-2xl relative animate-scaleUp">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-4">
+          <div className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-lg space-y-5 overflow-y-auto overscroll-contain rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-2xl animate-scaleUp sm:max-h-[calc(100dvh-2rem)] sm:space-y-6 sm:p-7">
             <div className="text-center space-y-2">
               <div className="w-14 h-14 mx-auto rounded-full bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
                 <Award className="w-7 h-7" />
