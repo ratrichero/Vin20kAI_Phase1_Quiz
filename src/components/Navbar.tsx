@@ -61,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 2xl:max-w-screen-2xl 2xl:px-8">
         <div className="flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-4">
           <button
             type="button"
@@ -96,7 +96,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span>{label}</span>
                   {mode === 'mistakes_review' && wrongQuestionsCount > 0 && (
                     <span className="rounded-full border border-rose-700/60 bg-rose-900/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-200">
-                      {wrongQuestionsCount}
+                      {wrongQuestionsCount > 99 ? '99+' : wrongQuestionsCount}
+                    </span>
+                  )}
+                  {mode === 'leaderboard' && badgesCount > 0 && (
+                    <span className="rounded-full border border-amber-700/50 bg-amber-950/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-300">
+                      {badgesCount > 99 ? '99+' : badgesCount}
                     </span>
                   )}
                 </button>
@@ -104,34 +109,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
-            {wrongQuestionsCount > 0 && (
-              <button
-                type="button"
-                onClick={() => handleSelectMode('mistakes_review')}
-                className="hidden items-center gap-1.5 rounded-lg border border-rose-700/60 bg-rose-950/50 px-2.5 py-2 font-mono text-xs text-rose-300 transition-colors hover:bg-rose-900/60 sm:flex"
-                title="Có câu hỏi sai cần ôn tập củng cố"
-              >
-                <RotateCcw className="h-3.5 w-3.5 text-rose-400" />
-                <span>{wrongQuestionsCount} câu sai</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={() => handleSelectMode('leaderboard')}
-              className="hidden items-center gap-1.5 rounded-lg border border-amber-700/50 bg-amber-950/40 px-2.5 py-2 font-mono text-xs text-amber-300 transition-colors hover:bg-amber-950/70 sm:flex"
-              title="Xem thành tích & bảng xếp hạng"
-            >
-              <Trophy className="h-3.5 w-3.5" />
-              <span>{badgesCount} huy hiệu</span>
-            </button>
-
+          <div className="flex shrink-0 items-center">
             <button
               type="button"
               onClick={() => handleSelectMode('exam')}
               aria-label="Vào thi thử"
-              className="flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition-all hover:from-indigo-500 hover:to-violet-500 active:scale-95 sm:px-3.5"
+              className="flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/25 transition-all hover:from-indigo-500 hover:to-violet-500 active:scale-95 sm:px-3.5 xl:hidden 2xl:flex"
             >
               <Clock className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Vào thi thử</span>
@@ -162,6 +145,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {mode === 'mistakes_review' && wrongQuestionsCount > 0 && (
                   <span className="min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-center font-mono text-[10px] font-bold leading-none text-white">
                     {wrongQuestionsCount > 99 ? '99+' : wrongQuestionsCount}
+                  </span>
+                )}
+                {mode === 'leaderboard' && badgesCount > 0 && (
+                  <span className="min-w-5 rounded-full bg-amber-700/80 px-1.5 py-0.5 text-center font-mono text-[10px] font-bold leading-none text-amber-100">
+                    {badgesCount > 99 ? '99+' : badgesCount}
                   </span>
                 )}
               </button>

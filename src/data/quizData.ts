@@ -17,7 +17,7 @@ export const loadAllQuestions = async (): Promise<Question[]> => {
 
   loadPromise = (async () => {
     try {
-      const res = await fetch(QUIZ_ASSET_URL);
+      const res = await fetch(QUIZ_ASSET_URL, { cache: 'no-store' });
       if (!res.ok) {
         throw new Error(`Failed to fetch quiz data: ${res.statusText}`);
       }
@@ -28,7 +28,9 @@ export const loadAllQuestions = async (): Promise<Question[]> => {
       console.error('Error loading quiz dataset:', err);
       // Fallback try with ./assets prefix if deployed
       try {
-        const fallbackRes = await fetch('./assets/aistudio/Master_Quiz_750_Questions__1__91ce19a6.json');
+        const fallbackRes = await fetch('./assets/aistudio/Master_Quiz_750_Questions__1__91ce19a6.json', {
+          cache: 'no-store',
+        });
         const fallbackData = await fallbackRes.json();
         cachedQuestions = fallbackData;
         return fallbackData;

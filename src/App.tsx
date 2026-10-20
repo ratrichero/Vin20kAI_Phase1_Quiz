@@ -93,7 +93,7 @@ export default function App() {
     };
 
     init();
-  }, []);
+  }, [loadAllQuestions]);
 
   const totalAnsweredCount = Object.keys(practiceHistory).length;
   const totalCorrectCount = Object.values(practiceHistory).filter((v) => v.isCorrect).length;
