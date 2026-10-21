@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Question } from '../types/quiz';
 import { PracticeHistoryMap, toggleBookmark, recordPracticeAnswer, clearPracticeHistoryForDay } from '../utils/storage';
+import { isCoreDay } from '../data/quizData';
 import { OptionExplanations } from './OptionExplanations';
 import { playCorrectSound, playIncorrectSound, playClickSound } from '../utils/audio';
 import confetti from 'canvas-confetti';
@@ -125,7 +126,12 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
   };
 
   const handleResetDay = () => {
-    if (!window.confirm('Bạn có chắc muốn làm lại toàn bộ 50 câu hỏi của Day này?')) return;
+    if (
+      !window.confirm(
+        `Bạn có chắc muốn làm lại toàn bộ ${questions.length} câu hỏi của ${isCoreDay(dayId) ? dayId : 'bộ chuyên đề này'}?`
+      )
+    )
+      return;
     const qIds = questions.map((q) => q.id);
     const updated = clearPracticeHistoryForDay(qIds);
     onUpdateHistory(updated);
@@ -202,8 +208,9 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSelectOption, handleNext, handlePrev]);
 
-  // Extract next Day ID (e.g. Day 01 -> Day 02)
+  // Next-Day shortcut only applies inside the 15-Day core curriculum (Day 01 -> Day 02 ... Day 15)
   const nextDayId = useMemo(() => {
+    if (!isCoreDay(dayId)) return null;
     const match = dayId.match(/\d+/);
     if (!match) return null;
     const num = parseInt(match[0], 10);
@@ -453,19 +460,25 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
               onClick={handleNext}
               className="flex min-h-11 items-center gap-1 rounded-xl bg-indigo-600 px-2.5 py-2 text-[11px] font-semibold text-white shadow-md shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-95 sm:gap-1.5 sm:px-5 sm:text-sm"
             >
-              <span>{currentIndex === questions.length - 1 ? 'Xem kết quả Day' : 'Câu tiếp theo'}</span>
+              <span>
+                {currentIndex === questions.length - 1
+                  ? isCoreDay(dayId)
+                    ? 'Xem kết quả Day'
+                    : 'Xem kết quả'
+                  : 'Câu tiếp theo'}
+              </span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* Question Quick Jump Matrix (1 to 50) */}
+      {/* Question Quick Jump Matrix */}
       <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/90 p-3 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2 text-slate-300 font-semibold">
             <Layers className="w-4 h-4 text-indigo-400" />
-            <span>Mục lục 50 câu hỏi ({dayId})</span>
+            <span>Mục lục {questions.length} câu hỏi ({dayId})</span>
           </div>
 
           <div className="flex items-center gap-3 text-[11px] text-slate-400 flex-wrap">
@@ -620,7 +633,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
                 }}
                 className="w-full py-2 text-center text-xs text-slate-400 hover:text-slate-200 transition-colors"
               >
-                Quay lại danh sách 15 Day
+                {isCoreDay(dayId) ? 'Quay lại danh sách 15 Day' : 'Quay lại danh sách chuyên đề'}
               </button>
             </div>
           </div>

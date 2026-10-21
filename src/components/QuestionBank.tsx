@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Question } from '../types/quiz';
+import { isCoreDay } from '../data/quizData';
 import { toggleBookmark } from '../utils/storage';
 import { getAllOptionExplanations } from '../utils/questionExplanations';
 import { playClickSound } from '../utils/audio';
@@ -43,10 +44,23 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
     const set = new Set<string>();
     questions.forEach((q) => set.add(q.day));
     return Array.from(set).sort((a, b) => {
-      const numA = parseInt(a.replace(/\D/g, '') || '0', 10);
-      const numB = parseInt(b.replace(/\D/g, '') || '0', 10);
-      return numA - numB;
+      const aCore = isCoreDay(a);
+      const bCore = isCoreDay(b);
+      if (aCore !== bCore) return aCore ? -1 : 1;
+      if (aCore && bCore) {
+        return parseInt(a.match(/\d+/)?.[0] || '0', 10) - parseInt(b.match(/\d+/)?.[0] || '0', 10);
+      }
+      return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
     });
+  }, [questions]);
+
+  // Question count per set (Day / supplemental) for labels & tooltips
+  const questionCountByDay = useMemo(() => {
+    const counts: { [dayId: string]: number } = {};
+    questions.forEach((q) => {
+      counts[q.day] = (counts[q.day] || 0) + 1;
+    });
+    return counts;
   }, [questions]);
 
   // Extract unique topics for selected day (or all)
@@ -109,15 +123,15 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
             <span>Kho Tri Thức Toàn Diện</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1">
-            Ngân hàng 750 câu hỏi AI Vin20K
+            Ngân hàng {questions.length} câu hỏi AI Vin20K
           </h2>
           <p className="text-xs sm:text-sm text-slate-400">
-            Tra cứu theo từ khóa, lọc theo Day & Topic, xem trước gợi ý và giải thích chi tiết
+            Tra cứu theo từ khóa, lọc theo Day / chuyên đề bổ sung & Topic, xem trước gợi ý và giải thích chi tiết
           </p>
         </div>
 
         <div className="text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 self-start sm:self-auto">
-          Tìm thấy <strong className="text-indigo-400">{filteredQuestions.length}</strong> / 750 câu
+          Tìm thấy <strong className="text-indigo-400">{filteredQuestions.length}</strong> / {questions.length} câu
         </div>
       </div>
 
@@ -150,7 +164,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
               }}
               className="min-h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-base text-slate-200 focus:border-indigo-500 focus:outline-none sm:text-xs"
             >
-              <option value="all">Tất cả các Day (01 - 15)</option>
+              <option value="all">Tất cả Day & chuyên đề bổ sung</option>
               {uniqueDays.map((d) => (
                 <option key={d} value={d}>
                   {d}
@@ -232,7 +246,7 @@ export const QuestionBank: React.FC<QuestionBankProps> = ({
                     <button
                       onClick={() => onPracticeDay(q.day)}
                       className="flex min-h-10 items-center gap-1 whitespace-nowrap text-[11px] font-medium text-indigo-400 transition-colors hover:text-indigo-300 sm:mr-1"
-                      title={`Mở làm toàn bộ 50 câu của ${q.day}`}
+                      title={`Mở làm toàn bộ ${questionCountByDay[q.day] ?? 0} câu của ${q.day}`}
                     >
                       <span>Luyện {q.day}</span>
                       <ArrowRight className="w-3 h-3" />

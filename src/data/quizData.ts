@@ -1,7 +1,10 @@
 import { Question, DaySummary } from '../types/quiz';
 
-// Fallback in case fetch needs relative path or during dev
-const QUIZ_ASSET_URL = '/assets/aistudio/Master_Quiz_750_Questions__1__91ce19a6.json';
+// Master dataset: 15 core Days (750 questions) + 5 supplemental sets (250 questions).
+const QUIZ_ASSET_URL = '/assets/aistudio/Master_Quiz_1000_Questions.json';
+const QUIZ_ASSET_FALLBACK_URL = './assets/aistudio/Master_Quiz_1000_Questions.json';
+
+const EXAM_QUESTION_COUNT = 100;
 
 let cachedQuestions: Question[] | null = null;
 let loadPromise: Promise<Question[]> | null = null;
@@ -28,7 +31,7 @@ export const loadAllQuestions = async (): Promise<Question[]> => {
       console.error('Error loading quiz dataset:', err);
       // Fallback try with ./assets prefix if deployed
       try {
-        const fallbackRes = await fetch('./assets/aistudio/Master_Quiz_750_Questions__1__91ce19a6.json', {
+        const fallbackRes = await fetch(QUIZ_ASSET_FALLBACK_URL, {
           cache: 'no-store',
         });
         const fallbackData = await fallbackRes.json();
@@ -36,6 +39,7 @@ export const loadAllQuestions = async (): Promise<Question[]> => {
         return fallbackData;
       } catch (innerErr) {
         console.error('Fallback fetch also failed:', innerErr);
+        loadPromise = null;
         throw err;
       }
     }
@@ -44,14 +48,26 @@ export const loadAllQuestions = async (): Promise<Question[]> => {
   return loadPromise;
 };
 
+/**
+ * Core curriculum sets are named "Day 01" .. "Day 15".
+ * Everything else (e.g. "Quantitative", "Specialized 01") is a supplemental set.
+ */
+export const isCoreDay = (dayId: string): boolean => /^Day\s+\d+$/i.test(dayId.trim());
+
+export const getCoreDayQuestions = (questions: Question[]): Question[] =>
+  questions.filter((q) => isCoreDay(q.day));
+
+export const getSupplementalQuestions = (questions: Question[]): Question[] =>
+  questions.filter((q) => !isCoreDay(q.day));
+
 export const getDayList = (questions: Question[]): DaySummary[] => {
   const map: { [day: string]: { title: string; topics: Set<string>; total: number; num: number } } = {};
 
   questions.forEach((q) => {
     const day = q.day;
     if (!map[day]) {
-      const match = day.match(/\d+/);
-      const num = match ? parseInt(match[0], 10) : 1;
+      const match = day.match(/^Day\s+(\d+)/i);
+      const num = match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
       map[day] = {
         title: q.day_title,
         topics: new Set<string>(),
@@ -65,18 +81,26 @@ export const getDayList = (questions: Question[]): DaySummary[] => {
     }
   });
 
-  const sortedDays = Object.keys(map).sort((a, b) => map[a].num - map[b].num);
+  // Core Days first (numeric order), then supplemental sets (natural order).
+  const sortedDays = Object.keys(map).sort((a, b) => {
+    const aCore = isCoreDay(a);
+    const bCore = isCoreDay(b);
+    if (aCore !== bCore) return aCore ? -1 : 1;
+    if (aCore && bCore) return map[a].num - map[b].num;
+    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+  });
 
-  return sortedDays.map((dayKey) => {
+  return sortedDays.map((dayKey, index) => {
     const item = map[dayKey];
     return {
       dayId: dayKey,
-      dayNum: item.num,
+      dayNum: index + 1,
       title: item.title,
       topics: Array.from(item.topics),
       totalQuestions: item.total,
       completedCount: 0,
       correctCount: 0,
+      isCore: isCoreDay(dayKey),
     };
   });
 };
@@ -85,19 +109,32 @@ export const getQuestionsForDay = (questions: Question[], dayId: string): Questi
   return questions.filter((q) => q.day.toLowerCase() === dayId.toLowerCase());
 };
 
+/** Maps every question id to the set (Day / supplemental) it belongs to. */
+export const buildQuestionDayIndex = (questions: Question[]): Map<string, string> => {
+  const index = new Map<string, string>();
+  questions.forEach((q) => index.set(q.id, q.day));
+  return index;
+};
+
 /**
- * Systematically samples 100 questions across all 15 Days.
+ * Systematically samples 100 questions across the 15 core Days.
  * Balances representation so every Day has ~6-7 questions and various topics.
+ * Supplemental sets are practice-only and stay out of the certification exam.
  */
 export const generateExamQuestions = (allQuestions: Question[]): Question[] => {
-  const days = getDayList(allQuestions);
-  const totalDays = days.length; // 15 days
+  const coreQuestions = getCoreDayQuestions(allQuestions);
+  const examPool = coreQuestions.length > 0 ? coreQuestions : allQuestions;
+  const days = getDayList(examPool).filter((day) => getQuestionsForDay(examPool, day.dayId).length > 0);
 
-  // Target count per day: 100 / 15 = 6 with remainder 10
-  // So 10 days will have 7 questions, 5 days will have 6 questions (10*7 + 5*6 = 100)
+  if (days.length === 0) return [];
+
+  const targetCount = Math.min(EXAM_QUESTION_COUNT, examPool.length);
+  const baseQuota = Math.floor(targetCount / days.length);
+  const extraQuota = targetCount % days.length;
+
   const quotaPerDay: { [dayId: string]: number } = {};
-  
-  // Shuffle which days get 7 vs 6 questions for variety in each attempt
+
+  // Shuffle which days receive one of the remainder questions for variety
   const dayIndices = days.map((_, idx) => idx);
   for (let i = dayIndices.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -106,14 +143,14 @@ export const generateExamQuestions = (allQuestions: Question[]): Question[] => {
 
   days.forEach((day, index) => {
     const originalPos = dayIndices.indexOf(index);
-    quotaPerDay[day.dayId] = originalPos < 10 ? 7 : 6;
+    quotaPerDay[day.dayId] = baseQuota + (originalPos < extraQuota ? 1 : 0);
   });
 
   const selectedQuestions: Question[] = [];
 
   days.forEach((day) => {
-    const dayQs = getQuestionsForDay(allQuestions, day.dayId);
-    const quota = quotaPerDay[day.dayId] || 6;
+    const dayQs = getQuestionsForDay(examPool, day.dayId);
+    const quota = Math.min(quotaPerDay[day.dayId] ?? baseQuota, dayQs.length);
 
     // Group by topic to sample diversely
     const byTopic: { [topic: string]: Question[] } = {};
@@ -127,7 +164,7 @@ export const generateExamQuestions = (allQuestions: Question[]): Question[] => {
     const chosenFromDay: Question[] = [];
 
     // First, pick 1 question from each topic in round-robin until quota is met
-    let tIdx = Math.floor(Math.random() * topicKeys.length);
+    let tIdx = topicKeys.length > 0 ? Math.floor(Math.random() * topicKeys.length) : 0;
     while (chosenFromDay.length < quota && chosenFromDay.length < dayQs.length) {
       const topic = topicKeys[tIdx % topicKeys.length];
       const availableInTopic = byTopic[topic].filter((q) => !chosenFromDay.some((c) => c.id === q.id));
@@ -141,21 +178,20 @@ export const generateExamQuestions = (allQuestions: Question[]): Question[] => {
     selectedQuestions.push(...chosenFromDay);
   });
 
-  // Ensure exactly 100 questions
-  if (selectedQuestions.length > 100) {
-    selectedQuestions.length = 100;
-  } else if (selectedQuestions.length < 100) {
+  // Ensure exactly the target number of questions
+  if (selectedQuestions.length > targetCount) {
+    selectedQuestions.length = targetCount;
+  } else if (selectedQuestions.length < targetCount) {
     // Fill remaining from unselected questions
     const selectedIds = new Set(selectedQuestions.map((q) => q.id));
-    const remaining = allQuestions.filter((q) => !selectedIds.has(q.id));
-    while (selectedQuestions.length < 100 && remaining.length > 0) {
+    const remaining = examPool.filter((q) => !selectedIds.has(q.id));
+    while (selectedQuestions.length < targetCount && remaining.length > 0) {
       const randIdx = Math.floor(Math.random() * remaining.length);
       selectedQuestions.push(remaining.splice(randIdx, 1)[0]);
     }
   }
 
-  // Shuffle the final 100 questions or keep them semi-ordered
-  // Randomizing the order gives a real exam feel
+  // Randomize the order for a real exam feel
   for (let i = selectedQuestions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [selectedQuestions[i], selectedQuestions[j]] = [selectedQuestions[j], selectedQuestions[i]];

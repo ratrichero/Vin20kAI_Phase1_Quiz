@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Question } from '../types/quiz';
 import { PracticeHistoryMap, toggleBookmark, recordPracticeAnswer } from '../utils/storage';
+import { isCoreDay } from '../data/quizData';
 import { OptionExplanations } from './OptionExplanations';
 import { playClickSound, playCorrectSound, playIncorrectSound } from '../utils/audio';
 import confetti from 'canvas-confetti';
@@ -57,18 +58,35 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
   const [showHint, setShowHint] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
 
-  // Extract all distinct topics with their Day origin and count
+  // Extract all distinct topics with their set (Day / supplemental) origin and count.
+  // Keyed by "day::topic" because the same topic name can appear in two different sets.
   const allTopicMeta = useMemo(() => {
-    const map = new Map<string, { topic: string; day: string; count: number }>();
+    const map = new Map<
+      string,
+      { key: string; topic: string; day: string; dayTitle: string; count: number; isCore: boolean }
+    >();
     questions.forEach((q) => {
       const t = q.topic;
       if (!t) return;
-      if (!map.has(t)) {
-        map.set(t, { topic: t, day: q.day, count: 0 });
+      const key = `${q.day}::${t}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          topic: t,
+          day: q.day,
+          dayTitle: q.day_title,
+          count: 0,
+          isCore: isCoreDay(q.day),
+        });
       }
-      map.get(t)!.count++;
+      map.get(key)!.count++;
     });
-    return Array.from(map.values()).sort((a, b) => a.topic.localeCompare(b.topic));
+
+    return Array.from(map.values()).sort((a, b) => {
+      if (a.isCore !== b.isCore) return a.isCore ? -1 : 1;
+      const dayCompare = a.day.localeCompare(b.day, undefined, { numeric: true, sensitivity: 'base' });
+      return dayCompare !== 0 ? dayCompare : a.topic.localeCompare(b.topic);
+    });
   }, [questions]);
 
   // Filter topics in selector
@@ -76,20 +94,23 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
     if (!topicSearch.trim()) return allTopicMeta;
     const term = topicSearch.toLowerCase();
     return allTopicMeta.filter(
-      (m) => m.topic.toLowerCase().includes(term) || m.day.toLowerCase().includes(term)
+      (m) =>
+        m.topic.toLowerCase().includes(term) ||
+        m.day.toLowerCase().includes(term) ||
+        m.dayTitle.toLowerCase().includes(term)
     );
   }, [allTopicMeta, topicSearch]);
 
-  const handleToggleTopic = (topic: string) => {
+  const handleToggleTopic = (topicKey: string) => {
     playClickSound();
     setSelectedTopics((prev) =>
-      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]
+      prev.includes(topicKey) ? prev.filter((t) => t !== topicKey) : [...prev, topicKey]
     );
   };
 
   const handleSelectAllTopics = () => {
     playClickSound();
-    setSelectedTopics(allTopicMeta.map((m) => m.topic));
+    setSelectedTopics(allTopicMeta.map((m) => m.key));
   };
 
   const handleClearTopics = () => {
@@ -102,8 +123,9 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
     playClickSound();
     if (selectedTopics.length === 0) return;
 
-    // Filter candidate questions
-    let candidates = questions.filter((q) => selectedTopics.includes(q.topic));
+    // Filter candidate questions by the exact set + topic combination
+    const selectedTopicKeys = new Set(selectedTopics);
+    let candidates = questions.filter((q) => selectedTopicKeys.has(`${q.day}::${q.topic}`));
 
     if (prioritizeMistakes) {
       // Sort questions: wrong answers first, then unattempted, then correct
@@ -328,28 +350,38 @@ export const CustomPractice: React.FC<CustomPracticeProps> = ({
                 type="text"
                 value={topicSearch}
                 onChange={(e) => setTopicSearch(e.target.value)}
-                placeholder="Lọc chủ đề theo tên hoặc Day (ví dụ: ReAct, Attention, RAG, Chunking, Gate...)"
+                placeholder="Lọc theo chủ đề, Day hoặc chuyên đề (ví dụ: ReAct, RAG, Quantitative, Specialized, Security...)"
                 className="min-h-11 w-full rounded-xl border border-slate-800 bg-slate-950 py-2 pl-9 pr-3 text-base text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none sm:text-sm"
               />
             </div>
 
             {/* Topics List Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
-              {filteredTopics.map(({ topic, day, count }) => {
-                const isSelected = selectedTopics.includes(topic);
+              {filteredTopics.map(({ key, topic, day, dayTitle, count, isCore }) => {
+                const isSelected = selectedTopics.includes(key);
                 return (
                   <button
-                    key={topic}
-                    onClick={() => handleToggleTopic(topic)}
+                    key={key}
+                    onClick={() => handleToggleTopic(key)}
                     className={`p-3 rounded-xl border text-left flex items-start justify-between gap-2.5 transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-indigo-950/60 border-indigo-500/80 text-white shadow-sm'
                         : 'bg-slate-950/40 border-slate-800/80 text-slate-300 hover:border-slate-700'
                     }`}
                   >
-                    <div className="space-y-1">
+                    <div className="min-w-0 space-y-1">
                       <span className="text-xs font-semibold leading-snug block">{topic}</span>
-                      <span className="text-[11px] text-slate-400 font-mono">{day}</span>
+                      <span className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                        <span
+                          className={`font-mono ${isCore ? 'text-indigo-400/90' : 'text-cyan-400/90'}`}
+                        >
+                          {day}
+                        </span>
+                        <span className="truncate" title={dayTitle}>
+                          · {dayTitle}
+                        </span>
+                        <span className="ml-auto shrink-0 font-mono text-slate-500">{count} câu</span>
+                      </span>
                     </div>
 
                     <div

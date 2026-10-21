@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Question, ExamResult, DaySummary } from '../types/quiz';
+import { buildQuestionDayIndex } from '../data/quizData';
 import { PracticeHistoryMap, getExamHistory, resetAllProgress, toggleBookmark } from '../utils/storage';
 import { playClickSound } from '../utils/audio';
 import { OptionExplanations } from './OptionExplanations';
@@ -48,28 +49,30 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   let totalCorrect = 0;
 
   const dayStats: { [dayId: string]: { answered: number; correct: number; total: number; title: string } } = {};
+  const questionDayIndex = buildQuestionDayIndex(questions);
 
   days.forEach((d) => {
     dayStats[d.dayId] = { answered: 0, correct: 0, total: d.totalQuestions, title: d.title };
   });
 
   Object.entries(practiceHistory).forEach(([qId, val]) => {
-    const match = qId.match(/^D(\d+)/i);
-    if (match) {
-      const dayKey = `Day ${match[1].padStart(2, '0')}`;
-      if (dayStats[dayKey]) {
-        dayStats[dayKey].answered += 1;
-        totalAnswered += 1;
-        if (val.isCorrect) {
-          dayStats[dayKey].correct += 1;
-          totalCorrect += 1;
-        }
-      }
+    const dayKey = questionDayIndex.get(qId);
+    if (!dayKey || !dayStats[dayKey]) return;
+
+    dayStats[dayKey].answered += 1;
+    totalAnswered += 1;
+    if (val.isCorrect) {
+      dayStats[dayKey].correct += 1;
+      totalCorrect += 1;
     }
   });
 
+  const coreDays = days.filter((day) => day.isCore);
+  const supplementalSets = days.filter((day) => !day.isCore);
+  const totalQuestionCount = questions.length;
   const overallAccuracy = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
-  const progressPercent = Math.round((totalAnswered / 750) * 100);
+  const progressPercent =
+    totalQuestionCount > 0 ? Math.min(100, Math.round((totalAnswered / totalQuestionCount) * 100)) : 0;
 
   // Bookmarked questions
   const bookmarkedQuestions = questions.filter((q) => bookmarks.includes(q.id));
@@ -102,7 +105,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             Bảng theo dõi tiến độ & Lịch sử thi AI Vin20K
           </h2>
           <p className="text-xs sm:text-sm text-slate-400">
-            Tổng hợp dữ liệu ôn tập 15 Day, tỷ lệ giải quyết câu hỏi và các kỳ thi thử 100 câu
+            Tổng hợp tiến độ 15 Day cốt lõi và 5 bộ chuyên đề bổ sung, cùng lịch sử thi thử 100 câu
           </p>
         </div>
 
@@ -127,7 +130,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          Tổng quan 15 Day
+          Tổng quan tiến độ
         </button>
 
         <button
@@ -167,7 +170,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-1 sm:p-5">
               <span className="text-xs text-slate-400 font-medium">Đã trả lời</span>
               <div className="text-2xl sm:text-3xl font-black text-white font-mono">
-                {totalAnswered} <span className="text-sm font-normal text-slate-500">/ 750</span>
+                {totalAnswered} <span className="text-sm font-normal text-slate-500">/ {totalQuestionCount}</span>
               </div>
               <div className="text-[11px] text-indigo-400 font-mono mt-1">{progressPercent}% kho câu hỏi</div>
             </div>
@@ -223,55 +226,100 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </div>
           )}
 
-          {/* 15 Days Progress Matrix */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                  Tiến độ & Độ chính xác từng Day (50 câu / Day)
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Nhấp vào từng Day để vào luyện tập ngay</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {days.map((day) => {
-                const stat = dayStats[day.dayId] || { answered: 0, correct: 0, total: 50, title: day.title };
-                const dayAccuracy = stat.answered > 0 ? Math.round((stat.correct / stat.answered) * 100) : 0;
-                const percent = Math.round((stat.answered / 50) * 100);
-                const isCompleted = stat.answered >= 50;
-
-                return (
-                  <div
-                    key={day.dayId}
-                    onClick={() => onSelectDay(day.dayId)}
-                    className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-indigo-500/50 cursor-pointer transition-all space-y-2.5 group"
-                  >
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-mono font-bold text-indigo-300">{day.dayId}</span>
-                      <span className="font-mono text-[11px] text-slate-400">
-                        {stat.answered}/50 câu ({dayAccuracy}% đúng)
-                      </span>
-                    </div>
-
-                    <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
-                      {day.title}
-                    </h4>
-
-                    {/* Progress Bar */}
-                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          isCompleted ? 'bg-emerald-500' : 'bg-indigo-500'
-                        }`}
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
+          {/* Progress Matrix: core Days + supplemental sets */}
+          {([
+            {
+              key: 'core',
+              heading: `Tiến độ & Độ chính xác ${coreDays.length} Day cốt lõi`,
+              caption: 'Nhấp vào từng Day để vào luyện tập ngay',
+              sets: coreDays,
+            },
+            {
+              key: 'supplemental',
+              heading: `Tiến độ ${supplementalSets.length} bộ chuyên đề bổ sung`,
+              caption: 'Luyện tự do ngoài lộ trình 15 Day, không tính vào đề thi thử 100 câu',
+              sets: supplementalSets,
+            },
+          ] as const)
+            .filter((section) => section.sets.length > 0)
+            .map((section) => (
+              <div
+                key={section.key}
+                className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                      {section.heading}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">{section.caption}</p>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                  {section.sets.map((day) => {
+                    const stat = dayStats[day.dayId] || {
+                      answered: 0,
+                      correct: 0,
+                      total: day.totalQuestions,
+                      title: day.title,
+                    };
+                    const total = stat.total || day.totalQuestions || 1;
+                    const dayAccuracy = stat.answered > 0 ? Math.round((stat.correct / stat.answered) * 100) : 0;
+                    const percent = Math.min(100, Math.round((stat.answered / total) * 100));
+                    const isCompleted = stat.answered >= total;
+                    const isSupplemental = !day.isCore;
+
+                    return (
+                      <div
+                        key={day.dayId}
+                        onClick={() => onSelectDay(day.dayId)}
+                        className={`p-4 rounded-xl bg-slate-950/60 border cursor-pointer transition-all space-y-2.5 group ${
+                          isSupplemental
+                            ? 'border-cyan-900/50 hover:border-cyan-500/50'
+                            : 'border-slate-800/80 hover:border-indigo-500/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-xs">
+                          <span
+                            className={`font-mono font-bold ${
+                              isSupplemental ? 'text-cyan-300' : 'text-indigo-300'
+                            }`}
+                          >
+                            {day.dayId}
+                          </span>
+                          <span className="font-mono text-[11px] text-slate-400">
+                            {stat.answered}/{total} câu ({dayAccuracy}% đúng)
+                          </span>
+                        </div>
+
+                        <h4
+                          className={`text-sm font-semibold text-white transition-colors line-clamp-2 ${
+                            isSupplemental ? 'group-hover:text-cyan-300' : 'group-hover:text-indigo-300'
+                          }`}
+                        >
+                          {day.title}
+                        </h4>
+
+                        {/* Progress Bar */}
+                        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                              isCompleted
+                                ? 'bg-emerald-500'
+                                : isSupplemental
+                                  ? 'bg-cyan-500'
+                                  : 'bg-indigo-500'
+                            }`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
         </div>
       )}
 

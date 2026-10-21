@@ -15,13 +15,15 @@ export interface Question {
 }
 
 export interface DaySummary {
-  dayId: string; // "Day 01"
+  dayId: string; // "Day 01" | "Quantitative" | "Specialized 01"
   dayNum: number; // 1
   title: string;
   topics: string[];
   totalQuestions: number;
   completedCount: number;
   correctCount: number;
+  /** true for the original 15-Day curriculum, false for supplemental sets */
+  isCore: boolean;
 }
 
 export interface UserAnswerRecord {

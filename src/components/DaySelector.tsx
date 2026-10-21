@@ -1,5 +1,6 @@
 import React from 'react';
-import { DaySummary } from '../types/quiz';
+import { DaySummary, Question } from '../types/quiz';
+import { buildQuestionDayIndex } from '../data/quizData';
 import { PracticeHistoryMap } from '../utils/storage';
 import {
   BookOpen,
@@ -16,6 +17,7 @@ import {
 
 interface DaySelectorProps {
   days: DaySummary[];
+  questions: Question[];
   practiceHistory: PracticeHistoryMap;
   onSelectDay: (dayId: string) => void;
   onStartExam: () => void;
@@ -27,6 +29,7 @@ interface DaySelectorProps {
 
 export const DaySelector: React.FC<DaySelectorProps> = ({
   days,
+  questions,
   practiceHistory,
   onSelectDay,
   onStartExam,
@@ -40,29 +43,142 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
   let totalCorrect = 0;
 
   const dayProgressMap: { [dayId: string]: { answered: number; correct: number } } = {};
+  const questionDayIndex = buildQuestionDayIndex(questions);
 
   days.forEach((day) => {
     dayProgressMap[day.dayId] = { answered: 0, correct: 0 };
   });
 
   Object.entries(practiceHistory).forEach(([qId, val]) => {
-    const match = qId.match(/^D(\d+)/i);
-    if (match) {
-      const dayKey = `Day ${match[1].padStart(2, '0')}`;
-      if (dayProgressMap[dayKey]) {
-        dayProgressMap[dayKey].answered += 1;
-        totalAnswered += 1;
-        if (val.isCorrect) {
-          dayProgressMap[dayKey].correct += 1;
-          totalCorrect += 1;
-        }
-      }
+    const dayId = questionDayIndex.get(qId);
+    if (!dayId || !dayProgressMap[dayId]) return;
+
+    dayProgressMap[dayId].answered += 1;
+    totalAnswered += 1;
+    if (val.isCorrect) {
+      dayProgressMap[dayId].correct += 1;
+      totalCorrect += 1;
     }
   });
 
+  const coreDays = days.filter((day) => day.isCore);
+  const supplementalSets = days.filter((day) => !day.isCore);
+  const supplementalQuestionCount = supplementalSets.reduce((sum, day) => sum + day.totalQuestions, 0);
+  const totalQuestionCount = questions.length;
   const totalWrong = totalAnswered - totalCorrect;
   const overallAccuracy = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
-  const overallPercentage = Math.round((totalAnswered / 750) * 100);
+  const overallPercentage =
+    totalQuestionCount > 0 ? Math.min(100, Math.round((totalAnswered / totalQuestionCount) * 100)) : 0;
+
+  const renderSetCard = (day: DaySummary) => {
+    const stats = dayProgressMap[day.dayId] || { answered: 0, correct: 0 };
+    const questionCount = day.totalQuestions;
+    const isCompleted = questionCount > 0 && stats.answered >= questionCount;
+    const accuracy = stats.answered > 0 ? Math.round((stats.correct / stats.answered) * 100) : 0;
+    const progressPercent =
+      questionCount > 0 ? Math.min(100, Math.round((stats.answered / questionCount) * 100)) : 0;
+    const isSupplemental = !day.isCore;
+
+    return (
+      <button
+        type="button"
+        key={day.dayId}
+        onClick={() => onSelectDay(day.dayId)}
+        aria-label={`Mở bộ câu hỏi ${day.dayId}: ${day.title} (${questionCount} câu)`}
+        className={`group relative flex min-h-11 w-full min-w-0 flex-col justify-between rounded-xl border bg-slate-900/70 p-4 text-left transition-all duration-200 hover:bg-slate-900/95 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 sm:p-5 ${
+          isSupplemental
+            ? 'border-cyan-900/60 hover:border-cyan-500/50 hover:shadow-cyan-950/30 focus-visible:ring-cyan-400'
+            : 'border-slate-800/90 hover:border-indigo-500/50 hover:shadow-indigo-950/30 focus-visible:ring-indigo-400'
+        }`}
+      >
+        <div className="space-y-3">
+          {/* Card Header */}
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={`rounded border px-2 py-0.5 font-mono text-xs font-bold ${
+                isSupplemental
+                  ? 'border-cyan-800/50 bg-cyan-950/70 text-cyan-300'
+                  : 'border-indigo-800/50 bg-indigo-950/80 text-indigo-300'
+              }`}
+            >
+              {day.dayId}
+            </span>
+
+            {isCompleted ? (
+              <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Đã hoàn thành</span>
+              </span>
+            ) : stats.answered > 0 ? (
+              <span className="text-right font-mono text-[11px] text-amber-400">
+                {stats.answered}/{questionCount} câu ({accuracy}% đúng)
+              </span>
+            ) : (
+              <span className="font-mono text-[11px] text-slate-500">{questionCount} câu hỏi</span>
+            )}
+          </div>
+
+          {/* Title */}
+          <div>
+            <h3
+              className={`text-base font-bold text-white transition-colors line-clamp-2 ${
+                isSupplemental ? 'group-hover:text-cyan-300' : 'group-hover:text-indigo-300'
+              }`}
+            >
+              {day.title}
+            </h3>
+          </div>
+
+          {/* Progress bar */}
+          <div className="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
+            <div
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                isCompleted ? 'bg-emerald-500' : isSupplemental ? 'bg-cyan-500' : 'bg-indigo-500'
+              }`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+
+          {/* Topics Tags */}
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {day.topics.slice(0, 3).map((topic, i) => (
+              <span
+                key={i}
+                className="text-[11px] text-slate-400 bg-slate-800/60 rounded px-2 py-0.5 truncate max-w-[200px]"
+                title={topic}
+              >
+                {topic}
+              </span>
+            ))}
+            {day.topics.length > 3 && (
+              <span className="text-[11px] text-slate-500 px-1 py-0.5">
+                +{day.topics.length - 3} chủ đề
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Card Footer Action */}
+        <div className="pt-4 mt-4 border-t border-slate-800/60 flex items-center justify-between text-xs">
+          <span className="text-slate-400 flex items-center gap-1">
+            <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+            <span>Luyện {questionCount} câu</span>
+          </span>
+
+          <span
+            className={`flex items-center gap-1 font-semibold transition-colors ${
+              isSupplemental
+                ? 'text-cyan-400 group-hover:text-cyan-300'
+                : 'text-indigo-400 group-hover:text-indigo-300'
+            }`}
+          >
+            <span>{stats.answered > 0 ? 'Tiếp tục luyện' : 'Bắt đầu ngay'}</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </div>
+      </button>
+    );
+  };
 
   return (
     <div className="space-y-8 pb-16">
@@ -83,7 +199,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
             </h1>
 
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-              Nắm vững kiến thức 15 chuyên đề công nghệ LLM, Agentic Design Pattern, Context Engineering, RAG & Vector DB, Multi-Agent MCP, Guardrails và Production Architecture với đầy đủ gợi ý và giải thích chi tiết.
+              Nắm vững 15 chuyên đề cốt lõi (LLM Foundation, Agentic Design Pattern, Context Engineering, RAG & Vector DB, Multi-Agent MCP, Guardrails, Production Architecture) cùng 5 bộ chuyên đề bổ sung: AI Engineering Quantitative, System Design, Security & Red Teaming, Anti-Patterns và Decision Matrix — tất cả đều có gợi ý và giải thích chi tiết từng phương án.
             </p>
 
             <div className="grid grid-cols-1 gap-2.5 pt-2 min-[420px]:grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
@@ -142,7 +258,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
             <div className="grid grid-cols-3 gap-3 pt-1 text-center">
               <div className="bg-slate-800/60 rounded-lg p-2.5">
                 <div className="text-lg font-bold text-white tabular-nums font-mono">{totalAnswered}</div>
-                <div className="text-[11px] text-slate-400">Đã luyện / 750</div>
+                <div className="text-[11px] text-slate-400">Đã luyện / {totalQuestionCount}</div>
               </div>
               <div className="bg-slate-800/60 rounded-lg p-2.5">
                 <div className="text-lg font-bold text-emerald-400 tabular-nums font-mono">{totalCorrect}</div>
@@ -218,12 +334,16 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
         </button>
       </div>
 
-      {/* Days Grid Section */}
+      {/* Core 15-Day Curriculum Grid */}
       <section className="space-y-4">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div className="min-w-0">
-            <h2 className="text-xl font-bold text-white tracking-tight">15 Chuyên đề học tập theo Day</h2>
-            <p className="text-xs sm:text-sm text-slate-400">Mỗi Day gồm 50 câu hỏi luyện thi bám sát nội dung bài giảng và thực tế triển khai</p>
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              {coreDays.length} Chuyên đề học tập theo Day
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              Mỗi Day gồm 50 câu hỏi luyện thi bám sát nội dung bài giảng và thực tế triển khai
+            </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
             <span>50 câu / Day</span>
@@ -233,94 +353,35 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {days.map((day) => {
-            const stats = dayProgressMap[day.dayId] || { answered: 0, correct: 0 };
-            const isCompleted = stats.answered >= 50;
-            const accuracy = stats.answered > 0 ? Math.round((stats.correct / stats.answered) * 100) : 0;
-            const progressPercent = Math.round((stats.answered / 50) * 100);
-
-            return (
-              <button
-                type="button"
-                key={day.dayId}
-                onClick={() => onSelectDay(day.dayId)}
-                aria-label={`Mở bài luyện ${day.dayId}: ${day.title}`}
-                className="group relative flex min-h-11 w-full min-w-0 flex-col justify-between rounded-xl border border-slate-800/90 bg-slate-900/70 p-4 text-left transition-all duration-200 hover:border-indigo-500/50 hover:bg-slate-900/95 hover:shadow-lg hover:shadow-indigo-950/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 sm:p-5"
-              >
-                <div className="space-y-3">
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-800/50">
-                      {day.dayId}
-                    </span>
-
-                    {isCompleted ? (
-                      <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Đã hoàn thành</span>
-                      </span>
-                    ) : stats.answered > 0 ? (
-                      <span className="text-[11px] text-amber-400 font-mono">
-                        {stats.answered}/50 câu ({accuracy}% đúng)
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-slate-500 font-mono">50 câu hỏi</span>
-                    )}
-                  </div>
-
-                  {/* Title */}
-                  <div>
-                    <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
-                      {day.title}
-                    </h3>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        isCompleted ? 'bg-emerald-500' : 'bg-indigo-500'
-                      }`}
-                      style={{ width: `${progressPercent}%` }}
-                    />
-                  </div>
-
-                  {/* Topics Tags */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {day.topics.slice(0, 3).map((topic, i) => (
-                      <span
-                        key={i}
-                        className="text-[11px] text-slate-400 bg-slate-800/60 rounded px-2 py-0.5 truncate max-w-[200px]"
-                        title={topic}
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                    {day.topics.length > 3 && (
-                      <span className="text-[11px] text-slate-500 px-1 py-0.5">
-                        +{day.topics.length - 3} chủ đề
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Card Footer Action */}
-                <div className="pt-4 mt-4 border-t border-slate-800/60 flex items-center justify-between text-xs">
-                  <span className="text-slate-400 flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Luyện 50 câu</span>
-                  </span>
-
-                  <span className="flex items-center gap-1 font-semibold text-indigo-400 group-hover:text-indigo-300 transition-colors">
-                    <span>{stats.answered > 0 ? 'Tiếp tục luyện' : 'Bắt đầu ngay'}</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+          {coreDays.map(renderSetCard)}
         </div>
       </section>
+
+      {/* Supplemental Topic Sets */}
+      {supplementalSets.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold tracking-tight text-white">
+                {supplementalSets.length} Bộ chuyên đề bổ sung
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400">
+                {supplementalQuestionCount} câu hỏi chuyên sâu ngoài lộ trình 15 Day: tính toán AI Engineering, System
+                Design, Security & Red Teaming, Anti-Patterns và Decision Matrix.
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 text-xs text-cyan-400/80">
+              <span>Luyện tự do</span>
+              <span>·</span>
+              <span>Không tính vào đề thi thử</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {supplementalSets.map(renderSetCard)}
+          </div>
+        </section>
+      )}
 
       {/* Info Callout for 100-Question Exam Mode */}
       <section className="flex flex-col items-stretch justify-between gap-4 rounded-xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900 p-4 sm:flex-row sm:items-center sm:p-6">
@@ -331,7 +392,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
           <div>
             <h4 className="text-base font-bold text-white">Chế độ kiểm tra tổng hợp kiến thức (100 câu / 100 phút)</h4>
             <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-              Mô phỏng chuẩn kỳ thi thật: 100 câu hỏi tuyển chọn ngẫu nhiên đồng đều từ 15 ngày học, có tính giờ đếm ngược, tính điểm và báo cáo phân tích năng lực chi tiết.
+              Mô phỏng chuẩn kỳ thi thật: 100 câu hỏi tuyển chọn ngẫu nhiên đồng đều từ 15 Day cốt lõi, có tính giờ đếm ngược, tính điểm và báo cáo phân tích năng lực chi tiết. Các bộ chuyên đề bổ sung dùng để luyện tự do.
             </p>
           </div>
         </div>

@@ -37,7 +37,7 @@ const NAV_ITEMS: NavItem[] = [
   { mode: 'custom_practice', label: 'Luyện tùy chỉnh', mobileLabel: 'Tùy chỉnh', icon: Sliders, tone: 'indigo' },
   { mode: 'exam', label: 'Thi thử', mobileLabel: 'Thi thử', icon: Clock, tone: 'indigo' },
   { mode: 'leaderboard', label: 'Xếp hạng', mobileLabel: 'Xếp hạng', icon: Trophy, tone: 'amber' },
-  { mode: 'question_bank', label: 'Ngân hàng', mobileLabel: '750 câu', icon: Database, tone: 'indigo' },
+  { mode: 'question_bank', label: 'Ngân hàng', mobileLabel: 'Ngân hàng', icon: Database, tone: 'indigo' },
   { mode: 'analytics', label: 'Thống kê', mobileLabel: 'Thống kê', icon: BarChart3, tone: 'indigo' },
 ];
 

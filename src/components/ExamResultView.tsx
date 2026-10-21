@@ -101,7 +101,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
             </h2>
 
             <p className="text-slate-300 text-sm max-w-xl">
-              Bài thi tổng hợp 100 câu hỏi phân bổ toàn diện qua 15 ngày học của chương trình AI Vin20K. Dưới đây là phân tích chi tiết năng lực và các chủ đề cần củng cố.
+              Bài thi tổng hợp 100 câu hỏi phân bổ toàn diện qua 15 Day cốt lõi của chương trình AI Vin20K. Dưới đây là phân tích chi tiết năng lực và các chủ đề cần củng cố.
             </p>
 
             <div className="flex items-center justify-center md:justify-start gap-4 pt-1 text-xs text-slate-400">

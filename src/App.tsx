@@ -80,7 +80,13 @@ export default function App() {
         setUserProfile(profile);
 
         const currentExams = getExamHistory();
-        const { badges: evaluatedBadges } = evaluateAchievements(history, getBookmarks(), currentExams);
+        const { badges: evaluatedBadges } = evaluateAchievements(
+          history,
+          getBookmarks(),
+          currentExams,
+          false,
+          data
+        );
         setBadges(evaluatedBadges);
       } catch (err) {
         console.error('Initialization error:', err);
@@ -109,7 +115,8 @@ export default function App() {
         practiceHistory,
         bookmarks,
         exams,
-        customFullScore
+        customFullScore,
+        questions
       );
       setBadges(updatedBadges);
 
@@ -127,7 +134,7 @@ export default function App() {
         }
       }
     },
-    [practiceHistory, bookmarks]
+    [practiceHistory, bookmarks, questions]
   );
 
   const handleUpdateHistory = (newHistory: PracticeHistoryMap) => {
@@ -201,7 +208,7 @@ export default function App() {
         </div>
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white tracking-tight">AI Vin20K Master Quiz</h2>
-          <p className="text-sm text-slate-400">Đang khởi tạo 750 câu hỏi cho 15 ngày học...</p>
+          <p className="text-sm text-slate-400">Đang khởi tạo 1000 câu hỏi cho 15 Day và 5 bộ chuyên đề bổ sung...</p>
         </div>
       </div>
     );
@@ -310,6 +317,7 @@ export default function App() {
                 ) : (
                   <DaySelector
                     days={days}
+                    questions={questions}
                     practiceHistory={practiceHistory}
                     onSelectDay={handleSelectDay}
                     onStartExam={handleStartExam}
@@ -410,14 +418,14 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 md:justify-start">
             <span className="font-semibold text-slate-400">AI Vin20K Master Quiz</span>
             <span aria-hidden="true">·</span>
-            <span>750 câu hỏi luyện thi chuẩn Production cho 15 ngày học</span>
+            <span>{questions.length} câu hỏi luyện thi chuẩn Production: 15 Day cốt lõi + 5 bộ chuyên đề bổ sung</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-slate-400">
             <span>LLM Foundation</span>
             <span aria-hidden="true">·</span>
             <span>Agentic Systems</span>
             <span aria-hidden="true">·</span>
-            <span>Production Architecture</span>
+            <span>Quantitative & System Design</span>
           </div>
         </div>
       </footer>

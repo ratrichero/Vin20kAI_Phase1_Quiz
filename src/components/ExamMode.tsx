@@ -279,7 +279,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
               Kiểm Tra Tổng Hợp Kiến Thức AI Vin20K
             </h1>
             <p className="text-slate-300 text-sm max-w-xl mx-auto">
-              Đề thi tổng hợp tiêu chuẩn mô phỏng kỳ kiểm tra năng lực kỹ sư AI: 100 câu trắc nghiệm được lấy ngẫu nhiên và phân bổ đều qua 15 ngày học.
+              Đề thi tổng hợp tiêu chuẩn mô phỏng kỳ kiểm tra năng lực kỹ sư AI: 100 câu trắc nghiệm được lấy ngẫu nhiên và phân bổ đều qua 15 Day cốt lõi. 5 bộ chuyên đề bổ sung dùng để luyện tự do và không nằm trong phạm vi đề thi.
             </p>
           </div>
 
