@@ -208,7 +208,7 @@ export default function App() {
         </div>
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white tracking-tight">AI Vin20K Master Quiz</h2>
-          <p className="text-sm text-slate-400">Đang khởi tạo 1000 câu hỏi cho 15 Day và 5 bộ chuyên đề bổ sung...</p>
+          <p className="text-sm text-slate-400">Đang khởi tạo 2000 câu hỏi cho 15 Day và 5 bộ chuyên đề bổ sung...</p>
         </div>
       </div>
     );

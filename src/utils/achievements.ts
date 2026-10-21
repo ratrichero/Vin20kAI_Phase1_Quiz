@@ -112,7 +112,7 @@ export const INITIAL_BADGES: Badge[] = [
   {
     id: 'badge_mastery_500',
     name: 'Bậc Thầy AI Vin20K',
-    description: 'Trả lời đúng tích lũy từ 500 câu hỏi trở lên trong toàn hệ thống 1000 câu.',
+    description: 'Trả lời đúng tích lũy từ 500 câu hỏi trở lên trong toàn bộ ngân hàng câu hỏi.',
     category: 'mastery',
     icon: 'Crown',
     maxProgress: 500,

@@ -1,8 +1,8 @@
 import { Question, DaySummary } from '../types/quiz';
 
-// Master dataset: 15 core Days (750 questions) + 5 supplemental sets (250 questions).
-const QUIZ_ASSET_URL = '/assets/aistudio/Master_Quiz_1000_Questions_v5.json';
-const QUIZ_ASSET_FALLBACK_URL = './assets/aistudio/Master_Quiz_1000_Questions_v5.json';
+// Master dataset: 15 core Days (1,500 questions) + 5 supplemental sets (500 questions) = 2,000 questions.
+const QUIZ_ASSET_URL = '/assets/aistudio/Master_Quiz_2000_Questions_v6.json';
+const QUIZ_ASSET_FALLBACK_URL = '/assets/aistudio/Master_Quiz_1000_Questions_v5.json';
 
 const EXAM_QUESTION_COUNT = 100;
 
