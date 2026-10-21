@@ -1,4 +1,5 @@
-import { Badge, LeaderboardUser, ExamResult } from '../types/quiz';
+import { Badge, LeaderboardUser, ExamResult, Question } from '../types/quiz';
+import { buildQuestionDayIndex, isCoreDay } from '../data/quizData';
 import { PracticeHistoryMap } from './storage';
 
 const BADGES_KEY = 'vin20k_badges';
@@ -21,7 +22,7 @@ export const INITIAL_BADGES: Badge[] = [
   {
     id: 'badge_day_complete',
     name: 'Chinh Phục 1 Day',
-    description: 'Hoàn thành trọn vẹn 50 câu hỏi của ít nhất 1 bài giảng theo Day.',
+    description: 'Hoàn thành trọn vẹn toàn bộ câu hỏi của ít nhất 1 Day hoặc 1 bộ chuyên đề bổ sung.',
     category: 'day',
     icon: 'BookOpen',
     maxProgress: 1,
@@ -81,7 +82,7 @@ export const INITIAL_BADGES: Badge[] = [
   {
     id: 'badge_explorer_15',
     name: 'Nhà Thám Hiểm Toàn Năng',
-    description: 'Luyện tập câu hỏi ở tất cả 15 Days trong chương trình AI Vin20K.',
+    description: 'Luyện tập câu hỏi ở tất cả 15 Day cốt lõi trong chương trình AI Vin20K.',
     category: 'day',
     icon: 'Compass',
     maxProgress: 15,
@@ -111,7 +112,7 @@ export const INITIAL_BADGES: Badge[] = [
   {
     id: 'badge_mastery_500',
     name: 'Bậc Thầy AI Vin20K',
-    description: 'Trả lời đúng tích lũy từ 500 câu hỏi trở lên trong toàn hệ thống 750 câu.',
+    description: 'Trả lời đúng tích lũy từ 500 câu hỏi trở lên trong toàn hệ thống 1000 câu.',
     category: 'mastery',
     icon: 'Crown',
     maxProgress: 500,
@@ -135,10 +136,18 @@ export const getStoredBadges = (): Badge[] => {
     const raw = localStorage.getItem(BADGES_KEY);
     if (!raw) return INITIAL_BADGES;
     const stored = JSON.parse(raw) as Badge[];
-    // Merge with any newly added badge definitions
+    // Keep progress/unlock state from storage, but always use the latest
+    // definitions (name, description, icon, maxProgress) from INITIAL_BADGES.
     return INITIAL_BADGES.map((b) => {
       const found = stored.find((s) => s.id === b.id);
-      return found ? { ...b, ...found } : b;
+      return found
+        ? {
+            ...b,
+            currentProgress: found.currentProgress,
+            isUnlocked: found.isUnlocked,
+            unlockedAt: found.unlockedAt,
+          }
+        : b;
     });
   } catch {
     return INITIAL_BADGES;
@@ -238,7 +247,8 @@ export const evaluateAchievements = (
   practiceHistory: PracticeHistoryMap,
   bookmarks: string[],
   examHistory: ExamResult[],
-  customPracticeCompletedWithFullScore = false
+  customPracticeCompletedWithFullScore = false,
+  questions: Question[] = []
 ): { badges: Badge[]; newlyUnlocked: Badge[] } => {
   const badges = getStoredBadges();
   const streak = getStreakData();
@@ -247,18 +257,29 @@ export const evaluateAchievements = (
   // 1. Total correct count
   const totalCorrect = Object.values(practiceHistory).filter((v) => v.isCorrect).length;
 
-  // 2. Questions answered per day
-  const dayAnsweredCounts: { [dayNum: number]: number } = {};
-  Object.keys(practiceHistory).forEach((qId) => {
-    const match = qId.match(/^D(\d+)/i);
-    if (match) {
-      const dNum = parseInt(match[1], 10);
-      dayAnsweredCounts[dNum] = (dayAnsweredCounts[dNum] || 0) + 1;
-    }
+  // 2. Questions answered per set (15 core Days + supplemental sets)
+  const questionDayIndex = buildQuestionDayIndex(questions);
+  const setTotals: { [dayId: string]: number } = {};
+  questions.forEach((q) => {
+    setTotals[q.day] = (setTotals[q.day] || 0) + 1;
   });
 
-  const completedDaysCount = Object.values(dayAnsweredCounts).filter((cnt) => cnt >= 50).length;
-  const daysPracticedCount = Object.keys(dayAnsweredCounts).length;
+  const setAnsweredCounts: { [dayId: string]: number } = {};
+  Object.keys(practiceHistory).forEach((qId) => {
+    let dayId = questionDayIndex.get(qId);
+    if (!dayId) {
+      // Fallback for history recorded before the dataset finished loading
+      const match = qId.match(/^D(\d+)/i);
+      dayId = match ? `Day ${match[1].padStart(2, '0')}` : undefined;
+    }
+    if (!dayId) return;
+    setAnsweredCounts[dayId] = (setAnsweredCounts[dayId] || 0) + 1;
+  });
+
+  const completedDaysCount = Object.entries(setAnsweredCounts).filter(
+    ([dayId, answered]) => answered >= (setTotals[dayId] ?? Number.POSITIVE_INFINITY)
+  ).length;
+  const daysPracticedCount = Object.keys(setAnsweredCounts).filter(isCoreDay).length;
 
   // 3. Exam high score
   const highestExamScore = examHistory.reduce((max, ex) => Math.max(max, ex.score), 0);

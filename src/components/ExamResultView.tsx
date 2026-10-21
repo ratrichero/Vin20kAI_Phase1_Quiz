@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { ExamResult } from '../types/quiz';
+import { ExamResult, Question } from '../types/quiz';
 import { toggleBookmark } from '../utils/storage';
+import { OptionExplanations } from './OptionExplanations';
 import {
   Award,
   Clock,
@@ -14,11 +15,11 @@ import {
   ChevronUp,
   BarChart2,
   AlertTriangle,
-  Lightbulb,
 } from 'lucide-react';
 
 interface ExamResultViewProps {
   result: ExamResult;
+  questions: Question[];
   bookmarks: string[];
   onUpdateBookmarks: (bms: string[]) => void;
   onRetakeExam: () => void;
@@ -27,6 +28,7 @@ interface ExamResultViewProps {
 
 export const ExamResultView: React.FC<ExamResultViewProps> = ({
   result,
+  questions,
   bookmarks,
   onUpdateBookmarks,
   onRetakeExam,
@@ -36,6 +38,10 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
 
   const percentage = Math.round((result.score / result.totalQuestions) * 100);
+  const questionById = useMemo(
+    () => new Map(questions.map((question) => [question.id, question] as const)),
+    [questions],
+  );
   const isPass = percentage >= 70;
   const isHonor = percentage >= 85;
 
@@ -70,9 +76,9 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
   }, [result.dayPerformance]);
 
   return (
-    <div className="space-y-8 pb-20 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl space-y-6 pb-16 sm:space-y-8 sm:pb-20">
       {/* Top Banner Result Card */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950/60 to-slate-900 border border-slate-700/80 rounded-2xl p-6 sm:p-8 shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-700/80 bg-gradient-to-br from-slate-900 via-indigo-950/60 to-slate-900 p-4 shadow-2xl sm:p-6 lg:p-8">
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2">
@@ -95,7 +101,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
             </h2>
 
             <p className="text-slate-300 text-sm max-w-xl">
-              Bài thi tổng hợp 100 câu hỏi phân bổ toàn diện qua 15 ngày học của chương trình AI Vin20K. Dưới đây là phân tích chi tiết năng lực và các chủ đề cần củng cố.
+              Bài thi tổng hợp 100 câu hỏi phân bổ toàn diện qua 15 Day cốt lõi của chương trình AI Vin20K. Dưới đây là phân tích chi tiết năng lực và các chủ đề cần củng cố.
             </p>
 
             <div className="flex items-center justify-center md:justify-start gap-4 pt-1 text-xs text-slate-400">
@@ -107,7 +113,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
           </div>
 
           {/* Big Score Box */}
-          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-6 text-center min-w-[200px] shadow-lg shrink-0">
+          <div className="w-full min-w-0 shrink-0 rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-center shadow-lg sm:w-auto sm:min-w-[200px] sm:p-6">
             <div className="text-4xl sm:text-5xl font-black font-mono tracking-tight text-white">
               <span className={isHonor ? 'text-emerald-400' : isPass ? 'text-indigo-400' : 'text-rose-400'}>
                 {result.score}
@@ -115,15 +121,17 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
               <span className="text-slate-500 text-2xl font-normal">/100</span>
             </div>
             <div className="text-sm font-semibold text-slate-300 mt-1">Điểm số: {percentage}%</div>
-            <div className="text-xs text-slate-500 mt-0.5">Tiêu chuẩn đạt: $\ge 70\%$</div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              Tiêu chuẩn đạt: <strong className="font-semibold text-slate-400">≥ 70 điểm</strong>
+            </div>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="pt-6 mt-6 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-5 flex flex-col items-stretch gap-2.5 border-t border-slate-800/80 pt-5 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:pt-6">
           <button
             onClick={onBackToOverview}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-medium border border-slate-700 transition-colors"
+            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-medium text-slate-200 transition-colors hover:bg-slate-700 sm:w-auto sm:text-sm"
           >
             <BookOpen className="w-4 h-4 text-indigo-400" />
             <span>Về danh mục 15 Day</span>
@@ -131,7 +139,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
 
           <button
             onClick={onRetakeExam}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-95"
+            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.02] hover:bg-indigo-500 active:scale-95 sm:w-auto sm:text-sm"
           >
             <RotateCcw className="w-4 h-4" />
             <span>Làm đề thi mới (100 câu khác)</span>
@@ -140,7 +148,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
       </div>
 
       {/* Day by Day Mastery Breakdown */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5">
+      <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BarChart2 className="w-5 h-5 text-indigo-400" />
@@ -157,8 +165,8 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
                 key={dayId}
                 className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 space-y-2 hover:border-slate-700 transition-colors"
               >
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-mono font-bold text-slate-300">{dayId}: {stats.title}</span>
+                <div className="flex flex-wrap items-center justify-between gap-1 text-xs">
+                  <span className="min-w-0 break-words font-mono font-bold text-slate-300">{dayId}: {stats.title}</span>
                   <span
                     className={`font-mono font-bold ${
                       isGood ? 'text-emerald-400' : 'text-amber-400'
@@ -183,7 +191,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
       </div>
 
       {/* Review Questions Section */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+      <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:space-y-6 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold text-white tracking-tight">Xem lại toàn bộ 100 câu hỏi & Giải thích chi tiết</h3>
@@ -191,10 +199,10 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
           </div>
 
           {/* Filter options */}
-          <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <div className="mobile-nav-scroll flex max-w-full items-center gap-1.5 overflow-x-auto self-start rounded-xl border border-slate-800 bg-slate-950 p-1 text-xs sm:self-auto">
             <button
               onClick={() => setFilterType('all')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className={`flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-lg px-3 py-1.5 font-medium transition-colors ${
                 filterType === 'all'
                   ? 'bg-indigo-600 text-white shadow'
                   : 'text-slate-400 hover:text-slate-200'
@@ -204,7 +212,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
             </button>
             <button
               onClick={() => setFilterType('wrong')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className={`flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-lg px-3 py-1.5 font-medium transition-colors ${
                 filterType === 'wrong'
                   ? 'bg-rose-600 text-white shadow'
                   : 'text-slate-400 hover:text-slate-200'
@@ -214,7 +222,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
             </button>
             <button
               onClick={() => setFilterType('correct')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className={`flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-lg px-3 py-1.5 font-medium transition-colors ${
                 filterType === 'correct'
                   ? 'bg-emerald-600 text-white shadow'
                   : 'text-slate-400 hover:text-slate-200'
@@ -230,6 +238,7 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
           {filteredAnswers.map((item, index) => {
             const isExpanded = expandedQuestionId === item.questionId;
             const isBookmarked = bookmarks.includes(item.questionId);
+            const question = questionById.get(item.questionId);
 
             return (
               <div
@@ -308,15 +317,21 @@ export const ExamResultView: React.FC<ExamResultViewProps> = ({
                       Liên quan đến chuyên đề: <span className="text-indigo-300">{item.day} - {item.topic}</span>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-indigo-950/40 border border-indigo-700/40 text-indigo-200">
-                      <div className="flex items-center gap-1.5 font-bold text-indigo-300 text-[11px] uppercase tracking-wider mb-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Đáp án chuẩn xác là phương án {item.correctOption}</span>
-                      </div>
-                      <p className="text-slate-200 text-xs leading-relaxed">
-                        Theo nội dung bài giảng {item.day}, phương án {item.correctOption} tuân thủ đúng nguyên lý vận hành chuẩn, tối ưu hóa các trade-offs cốt lõi (Latency - Cost - Quality) và đáp ứng yêu cầu Production-ready.
+                    {question ? (
+                      <>
+                        <div className="rounded-lg border border-slate-700/80 bg-slate-950/60 p-3">
+                          <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-indigo-300">
+                            Nội dung câu hỏi
+                          </div>
+                          <p className="text-sm leading-relaxed text-slate-200">{question.question}</p>
+                        </div>
+                        <OptionExplanations question={question} />
+                      </>
+                    ) : (
+                      <p className="rounded-lg border border-amber-700/40 bg-amber-950/20 p-3 text-amber-200">
+                        Không tìm thấy câu hỏi này trong bộ dữ liệu hiện tại nên chưa thể hiển thị giải thích theo từng phương án.
                       </p>
-                    </div>
+                    )}
                   </div>
                 )}
               </div>

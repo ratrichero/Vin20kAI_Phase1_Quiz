@@ -1,5 +1,6 @@
 import React from 'react';
-import { DaySummary } from '../types/quiz';
+import { DaySummary, Question } from '../types/quiz';
+import { buildQuestionDayIndex } from '../data/quizData';
 import { PracticeHistoryMap } from '../utils/storage';
 import {
   BookOpen,
@@ -16,6 +17,7 @@ import {
 
 interface DaySelectorProps {
   days: DaySummary[];
+  questions: Question[];
   practiceHistory: PracticeHistoryMap;
   onSelectDay: (dayId: string) => void;
   onStartExam: () => void;
@@ -27,6 +29,7 @@ interface DaySelectorProps {
 
 export const DaySelector: React.FC<DaySelectorProps> = ({
   days,
+  questions,
   practiceHistory,
   onSelectDay,
   onStartExam,
@@ -40,65 +43,179 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
   let totalCorrect = 0;
 
   const dayProgressMap: { [dayId: string]: { answered: number; correct: number } } = {};
+  const questionDayIndex = buildQuestionDayIndex(questions);
 
   days.forEach((day) => {
     dayProgressMap[day.dayId] = { answered: 0, correct: 0 };
   });
 
   Object.entries(practiceHistory).forEach(([qId, val]) => {
-    const match = qId.match(/^D(\d+)/i);
-    if (match) {
-      const dayKey = `Day ${match[1].padStart(2, '0')}`;
-      if (dayProgressMap[dayKey]) {
-        dayProgressMap[dayKey].answered += 1;
-        totalAnswered += 1;
-        if (val.isCorrect) {
-          dayProgressMap[dayKey].correct += 1;
-          totalCorrect += 1;
-        }
-      }
+    const dayId = questionDayIndex.get(qId);
+    if (!dayId || !dayProgressMap[dayId]) return;
+
+    dayProgressMap[dayId].answered += 1;
+    totalAnswered += 1;
+    if (val.isCorrect) {
+      dayProgressMap[dayId].correct += 1;
+      totalCorrect += 1;
     }
   });
 
+  const coreDays = days.filter((day) => day.isCore);
+  const supplementalSets = days.filter((day) => !day.isCore);
+  const supplementalQuestionCount = supplementalSets.reduce((sum, day) => sum + day.totalQuestions, 0);
+  const totalQuestionCount = questions.length;
   const totalWrong = totalAnswered - totalCorrect;
   const overallAccuracy = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
-  const overallPercentage = Math.round((totalAnswered / 750) * 100);
+  const overallPercentage =
+    totalQuestionCount > 0 ? Math.min(100, Math.round((totalAnswered / totalQuestionCount) * 100)) : 0;
+
+  const renderSetCard = (day: DaySummary) => {
+    const stats = dayProgressMap[day.dayId] || { answered: 0, correct: 0 };
+    const questionCount = day.totalQuestions;
+    const isCompleted = questionCount > 0 && stats.answered >= questionCount;
+    const accuracy = stats.answered > 0 ? Math.round((stats.correct / stats.answered) * 100) : 0;
+    const progressPercent =
+      questionCount > 0 ? Math.min(100, Math.round((stats.answered / questionCount) * 100)) : 0;
+    const isSupplemental = !day.isCore;
+
+    return (
+      <button
+        type="button"
+        key={day.dayId}
+        onClick={() => onSelectDay(day.dayId)}
+        aria-label={`Mở bộ câu hỏi ${day.dayId}: ${day.title} (${questionCount} câu)`}
+        className={`group relative flex min-h-11 w-full min-w-0 flex-col justify-between rounded-xl border bg-slate-900/70 p-4 text-left transition-all duration-200 hover:bg-slate-900/95 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 sm:p-5 ${
+          isSupplemental
+            ? 'border-cyan-900/60 hover:border-cyan-500/50 hover:shadow-cyan-950/30 focus-visible:ring-cyan-400'
+            : 'border-slate-800/90 hover:border-indigo-500/50 hover:shadow-indigo-950/30 focus-visible:ring-indigo-400'
+        }`}
+      >
+        <div className="space-y-3">
+          {/* Card Header */}
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={`rounded border px-2 py-0.5 font-mono text-xs font-bold ${
+                isSupplemental
+                  ? 'border-cyan-800/50 bg-cyan-950/70 text-cyan-300'
+                  : 'border-indigo-800/50 bg-indigo-950/80 text-indigo-300'
+              }`}
+            >
+              {day.dayId}
+            </span>
+
+            {isCompleted ? (
+              <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Đã hoàn thành</span>
+              </span>
+            ) : stats.answered > 0 ? (
+              <span className="text-right font-mono text-[11px] text-amber-400">
+                {stats.answered}/{questionCount} câu ({accuracy}% đúng)
+              </span>
+            ) : (
+              <span className="font-mono text-[11px] text-slate-500">{questionCount} câu hỏi</span>
+            )}
+          </div>
+
+          {/* Title */}
+          <div>
+            <h3
+              className={`text-base font-bold text-white transition-colors line-clamp-2 ${
+                isSupplemental ? 'group-hover:text-cyan-300' : 'group-hover:text-indigo-300'
+              }`}
+            >
+              {day.title}
+            </h3>
+          </div>
+
+          {/* Progress bar */}
+          <div className="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
+            <div
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                isCompleted ? 'bg-emerald-500' : isSupplemental ? 'bg-cyan-500' : 'bg-indigo-500'
+              }`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+
+          {/* Topics Tags */}
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {day.topics.slice(0, 3).map((topic, i) => (
+              <span
+                key={i}
+                className="text-[11px] text-slate-400 bg-slate-800/60 rounded px-2 py-0.5 truncate max-w-[200px]"
+                title={topic}
+              >
+                {topic}
+              </span>
+            ))}
+            {day.topics.length > 3 && (
+              <span className="text-[11px] text-slate-500 px-1 py-0.5">
+                +{day.topics.length - 3} chủ đề
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Card Footer Action */}
+        <div className="pt-4 mt-4 border-t border-slate-800/60 flex items-center justify-between text-xs">
+          <span className="text-slate-400 flex items-center gap-1">
+            <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+            <span>Luyện {questionCount} câu</span>
+          </span>
+
+          <span
+            className={`flex items-center gap-1 font-semibold transition-colors ${
+              isSupplemental
+                ? 'text-cyan-400 group-hover:text-cyan-300'
+                : 'text-indigo-400 group-hover:text-indigo-300'
+            }`}
+          >
+            <span>{stats.answered > 0 ? 'Tiếp tục luyện' : 'Bắt đầu ngay'}</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </div>
+      </button>
+    );
+  };
 
   return (
     <div className="space-y-8 pb-16">
       {/* Hero Banner */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 border border-indigo-500/20 p-6 sm:p-8 shadow-xl">
+      <section className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 p-4 shadow-xl sm:p-6 lg:p-8">
         <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute left-1/2 -top-20 w-60 h-60 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          <div className="lg:col-span-8 space-y-4">
-            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 tracking-wider uppercase">
-              <Zap className="w-3.5 h-3.5" />
+          <div className="min-w-0 space-y-4 lg:col-span-8">
+            <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-indigo-400 sm:text-xs">
+              <Zap className="h-3.5 w-3.5 shrink-0" />
               <span>Khóa học AI Vin20K · Chuẩn Luyện Thi & Thực Chiến</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              Hệ thống ôn luyện 750 câu quiz & Thi thử toàn diện
+              Hệ thống ôn luyện & Thi thử toàn diện
             </h1>
 
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-              Nắm vững kiến thức 15 chuyên đề công nghệ LLM, Agentic Design Pattern, Context Engineering, RAG & Vector DB, Multi-Agent MCP, Guardrails và Production Architecture với đầy đủ gợi ý và giải thích chi tiết.
+              Nắm vững 15 chuyên đề cốt lõi (LLM Foundation, Agentic Design Pattern, Context Engineering, RAG & Vector DB, Multi-Agent MCP, Guardrails, Production Architecture) cùng 5 bộ chuyên đề bổ sung: AI Engineering Quantitative, System Design, Security & Red Teaming, Anti-Patterns và Decision Matrix — tất cả đều có gợi ý và giải thích chi tiết từng phương án.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="grid grid-cols-1 gap-2.5 pt-2 min-[420px]:grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
               <button
                 onClick={onStartExam}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-95"
+                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-3 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] hover:bg-indigo-500 active:scale-95 sm:w-auto sm:px-5"
               >
-                <Target className="w-4 h-4" />
-                <span>Thi thử tổng hợp (100 câu / 100 phút)</span>
+                <Target className="h-4 w-4 shrink-0" />
+                <span className="sm:hidden">Thi thử tổng hợp</span>
+                <span className="hidden sm:inline">Thi thử tổng hợp (100 câu / 100 phút)</span>
               </button>
 
               {totalWrong > 0 && (
                 <button
                   onClick={onStartMistakesReview}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-950/70 hover:bg-rose-900/80 text-rose-200 text-sm font-semibold border border-rose-700/50 shadow-md shadow-rose-950/20 transition-all hover:scale-[1.02] active:scale-95"
+                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-rose-700/50 bg-rose-950/70 px-4 py-2.5 text-sm font-semibold text-rose-200 shadow-md shadow-rose-950/20 transition-all hover:scale-[1.02] hover:bg-rose-900/80 active:scale-95 sm:w-auto"
                 >
                   <RotateCcw className="w-4 h-4 text-rose-400" />
                   <span>Ôn lại {totalWrong} câu sai</span>
@@ -107,7 +224,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
 
               <button
                 onClick={onStartCustomPractice}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-950/70 hover:bg-violet-900/80 text-violet-200 text-sm font-semibold border border-violet-700/50 transition-all hover:scale-[1.02] active:scale-95"
+                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-700/50 bg-violet-950/70 px-4 py-2.5 text-sm font-semibold text-violet-200 transition-all hover:scale-[1.02] hover:bg-violet-900/80 active:scale-95 sm:w-auto"
               >
                 <Sliders className="w-4 h-4 text-violet-400" />
                 <span>Luyện theo chủ đề (10-15 câu)</span>
@@ -115,7 +232,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
 
               <button
                 onClick={onOpenLeaderboard}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-sm font-medium border border-slate-700/80 transition-colors"
+                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-700/80 bg-slate-800/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 sm:w-auto"
               >
                 <Trophy className="w-4 h-4 text-amber-400" />
                 <span>Bảng xếp hạng</span>
@@ -141,7 +258,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
             <div className="grid grid-cols-3 gap-3 pt-1 text-center">
               <div className="bg-slate-800/60 rounded-lg p-2.5">
                 <div className="text-lg font-bold text-white tabular-nums font-mono">{totalAnswered}</div>
-                <div className="text-[11px] text-slate-400">Đã luyện / 750</div>
+                <div className="text-[11px] text-slate-400">Đã luyện / {totalQuestionCount}</div>
               </div>
               <div className="bg-slate-800/60 rounded-lg p-2.5">
                 <div className="text-lg font-bold text-emerald-400 tabular-nums font-mono">{totalCorrect}</div>
@@ -157,11 +274,12 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
       </section>
 
       {/* Feature Highlight Banners */}
-      <div className={`grid grid-cols-1 ${totalWrong > 0 ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+      <div className={`grid grid-cols-1 ${totalWrong > 0 ? 'md:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
         {totalWrong > 0 && (
-          <div
+          <button
+            type="button"
             onClick={onStartMistakesReview}
-            className="bg-gradient-to-br from-slate-900 to-rose-950/40 border border-rose-500/30 hover:border-rose-500/60 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg group flex items-start gap-4"
+            className="group flex w-full items-start gap-4 rounded-2xl border border-rose-500/30 bg-gradient-to-br from-slate-900 to-rose-950/40 p-4 text-left transition-all hover:border-rose-500/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 sm:p-5"
           >
             <div className="w-12 h-12 rounded-xl bg-rose-600/20 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0 group-hover:scale-105 transition-transform">
               <RotateCcw className="w-6 h-6" />
@@ -176,12 +294,13 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
                 Tập trung luyện lại các câu hỏi từng trả lời sai, xóa tan các anti-patterns và củng cố vững chắc điểm yếu.
               </p>
             </div>
-          </div>
+          </button>
         )}
 
-        <div
+        <button
+          type="button"
           onClick={onStartCustomPractice}
-          className="bg-gradient-to-br from-slate-900 to-violet-950/30 border border-violet-500/20 hover:border-violet-500/50 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg group flex items-start gap-4"
+          className="group flex w-full items-start gap-4 rounded-2xl border border-violet-500/20 bg-gradient-to-br from-slate-900 to-violet-950/30 p-4 text-left transition-all hover:border-violet-500/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 sm:p-5"
         >
           <div className="w-12 h-12 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0 group-hover:scale-105 transition-transform">
             <Sliders className="w-6 h-6" />
@@ -194,11 +313,12 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
               Tự do lọc các chủ đề mong muốn (ReAct, RAG, Chunking, Multi-Agent MCP...). Có phân tích chi tiết lý do đúng/sai cho từng phương án.
             </p>
           </div>
-        </div>
+        </button>
 
-        <div
+        <button
+          type="button"
           onClick={onOpenLeaderboard}
-          className="bg-gradient-to-br from-slate-900 to-amber-950/30 border border-amber-500/20 hover:border-amber-500/50 rounded-2xl p-5 cursor-pointer transition-all hover:shadow-lg group flex items-start gap-4"
+          className="group flex w-full items-start gap-4 rounded-2xl border border-amber-500/20 bg-gradient-to-br from-slate-900 to-amber-950/30 p-4 text-left transition-all hover:border-amber-500/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 sm:p-5"
         >
           <div className="w-12 h-12 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 group-hover:scale-105 transition-transform">
             <Trophy className="w-6 h-6" />
@@ -211,15 +331,19 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
               Thu thập các danh hiệu & huy hiệu độc quyền, duy trì chuỗi ngày học liên tục và so tài điểm số với các học viên trong khóa AI Vin20K.
             </p>
           </div>
-        </div>
+        </button>
       </div>
 
-      {/* Days Grid Section */}
+      {/* Core 15-Day Curriculum Grid */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">15 Chuyên đề học tập theo Day</h2>
-            <p className="text-xs sm:text-sm text-slate-400">Mỗi Day gồm 50 câu hỏi luyện thi bám sát nội dung bài giảng và thực tế triển khai</p>
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              {coreDays.length} Chuyên đề học tập theo Day
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              Mỗi Day gồm 50 câu hỏi luyện thi bám sát nội dung bài giảng và thực tế triển khai
+            </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
             <span>50 câu / Day</span>
@@ -229,110 +353,54 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {days.map((day) => {
-            const stats = dayProgressMap[day.dayId] || { answered: 0, correct: 0 };
-            const isCompleted = stats.answered >= 50;
-            const accuracy = stats.answered > 0 ? Math.round((stats.correct / stats.answered) * 100) : 0;
-            const progressPercent = Math.round((stats.answered / 50) * 100);
-
-            return (
-              <div
-                key={day.dayId}
-                onClick={() => onSelectDay(day.dayId)}
-                className="group relative flex flex-col justify-between bg-slate-900/70 hover:bg-slate-900/95 border border-slate-800/90 hover:border-indigo-500/50 rounded-xl p-5 cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-indigo-950/30"
-              >
-                <div className="space-y-3">
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-800/50">
-                      {day.dayId}
-                    </span>
-
-                    {isCompleted ? (
-                      <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Đã hoàn thành</span>
-                      </span>
-                    ) : stats.answered > 0 ? (
-                      <span className="text-[11px] text-amber-400 font-mono">
-                        {stats.answered}/50 câu ({accuracy}% đúng)
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-slate-500 font-mono">50 câu hỏi</span>
-                    )}
-                  </div>
-
-                  {/* Title */}
-                  <div>
-                    <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
-                      {day.title}
-                    </h3>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        isCompleted ? 'bg-emerald-500' : 'bg-indigo-500'
-                      }`}
-                      style={{ width: `${progressPercent}%` }}
-                    />
-                  </div>
-
-                  {/* Topics Tags */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {day.topics.slice(0, 3).map((topic, i) => (
-                      <span
-                        key={i}
-                        className="text-[11px] text-slate-400 bg-slate-800/60 rounded px-2 py-0.5 truncate max-w-[200px]"
-                        title={topic}
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                    {day.topics.length > 3 && (
-                      <span className="text-[11px] text-slate-500 px-1 py-0.5">
-                        +{day.topics.length - 3} chủ đề
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Card Footer Action */}
-                <div className="pt-4 mt-4 border-t border-slate-800/60 flex items-center justify-between text-xs">
-                  <span className="text-slate-400 flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Luyện 50 câu</span>
-                  </span>
-
-                  <span className="flex items-center gap-1 font-semibold text-indigo-400 group-hover:text-indigo-300 transition-colors">
-                    <span>{stats.answered > 0 ? 'Tiếp tục luyện' : 'Bắt đầu ngay'}</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+          {coreDays.map(renderSetCard)}
         </div>
       </section>
 
+      {/* Supplemental Topic Sets */}
+      {supplementalSets.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold tracking-tight text-white">
+                {supplementalSets.length} Bộ chuyên đề bổ sung
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400">
+                {supplementalQuestionCount} câu hỏi chuyên sâu ngoài lộ trình 15 Day: tính toán AI Engineering, System
+                Design, Security & Red Teaming, Anti-Patterns và Decision Matrix.
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 text-xs text-cyan-400/80">
+              <span>Luyện tự do</span>
+              <span>·</span>
+              <span>Không tính vào đề thi thử</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {supplementalSets.map(renderSetCard)}
+          </div>
+        </section>
+      )}
+
       {/* Info Callout for 100-Question Exam Mode */}
-      <section className="bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900 border border-indigo-500/20 rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-start gap-3.5">
+      <section className="flex flex-col items-stretch justify-between gap-4 rounded-xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900 p-4 sm:flex-row sm:items-center sm:p-6">
+        <div className="flex min-w-0 items-start gap-3.5">
           <div className="w-10 h-10 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shrink-0 text-indigo-400">
             <Award className="w-5 h-5" />
           </div>
           <div>
             <h4 className="text-base font-bold text-white">Chế độ kiểm tra tổng hợp kiến thức (100 câu / 100 phút)</h4>
             <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-              Mô phỏng chuẩn kỳ thi thật: 100 câu hỏi tuyển chọn ngẫu nhiên đồng đều từ 15 ngày học, có tính giờ đếm ngược, tính điểm và báo cáo phân tích năng lực chi tiết.
+              Mô phỏng chuẩn kỳ thi thật: 100 câu hỏi tuyển chọn ngẫu nhiên đồng đều từ 15 Day cốt lõi, có tính giờ đếm ngược, tính điểm và báo cáo phân tích năng lực chi tiết. Các bộ chuyên đề bổ sung dùng để luyện tự do.
             </p>
           </div>
         </div>
 
         <button
+          type="button"
           onClick={onStartExam}
-          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-md shadow-indigo-600/30 transition-all shrink-0 whitespace-nowrap active:scale-95"
+          className="flex min-h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-95 sm:w-auto sm:text-sm"
         >
           <PlayCircle className="w-4 h-4" />
           <span>Bắt đầu thi thử ngay</span>

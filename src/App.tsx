@@ -80,7 +80,13 @@ export default function App() {
         setUserProfile(profile);
 
         const currentExams = getExamHistory();
-        const { badges: evaluatedBadges } = evaluateAchievements(history, getBookmarks(), currentExams);
+        const { badges: evaluatedBadges } = evaluateAchievements(
+          history,
+          getBookmarks(),
+          currentExams,
+          false,
+          data
+        );
         setBadges(evaluatedBadges);
       } catch (err) {
         console.error('Initialization error:', err);
@@ -93,7 +99,7 @@ export default function App() {
     };
 
     init();
-  }, []);
+  }, [loadAllQuestions]);
 
   const totalAnsweredCount = Object.keys(practiceHistory).length;
   const totalCorrectCount = Object.values(practiceHistory).filter((v) => v.isCorrect).length;
@@ -109,7 +115,8 @@ export default function App() {
         practiceHistory,
         bookmarks,
         exams,
-        customFullScore
+        customFullScore,
+        questions
       );
       setBadges(updatedBadges);
 
@@ -127,7 +134,7 @@ export default function App() {
         }
       }
     },
-    [practiceHistory, bookmarks]
+    [practiceHistory, bookmarks, questions]
   );
 
   const handleUpdateHistory = (newHistory: PracticeHistoryMap) => {
@@ -201,7 +208,7 @@ export default function App() {
         </div>
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white tracking-tight">AI Vin20K Master Quiz</h2>
-          <p className="text-sm text-slate-400">Đang khởi tạo 750 câu hỏi cho 15 ngày học...</p>
+          <p className="text-sm text-slate-400">Đang khởi tạo 1000 câu hỏi cho 15 Day và 5 bộ chuyên đề bổ sung...</p>
         </div>
       </div>
     );
@@ -236,7 +243,7 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
       {/* Toast Notification for Newly Unlocked Badge */}
       {newBadgeNotification && (
-        <div className="fixed top-20 right-4 z-50 max-w-sm w-full bg-slate-900 border border-amber-500/60 rounded-2xl p-4 shadow-2xl flex items-start gap-3.5 animate-fadeIn">
+        <div className="fixed left-3 right-3 top-32 z-50 flex w-auto max-w-sm items-start gap-3.5 rounded-2xl border border-amber-500/60 bg-slate-900 p-4 shadow-2xl animate-fadeIn sm:left-auto sm:right-4 sm:w-full xl:top-20">
           <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-500/60 flex items-center justify-center text-amber-400 shrink-0">
             <Award className="w-5 h-5" />
           </div>
@@ -276,11 +283,12 @@ export default function App() {
       />
 
       {/* Main Content Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 pt-6 pb-12">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-3 pt-4 pb-8 sm:px-6 sm:pt-6 sm:pb-12">
         {/* If user is reviewing a past exam result */}
         {reviewingExam ? (
           <ExamResultView
             result={reviewingExam}
+            questions={questions}
             bookmarks={bookmarks}
             onUpdateBookmarks={handleUpdateBookmarks}
             onRetakeExam={handleStartExam}
@@ -309,6 +317,7 @@ export default function App() {
                 ) : (
                   <DaySelector
                     days={days}
+                    questions={questions}
                     practiceHistory={practiceHistory}
                     onSelectDay={handleSelectDay}
                     onStartExam={handleStartExam}
@@ -405,18 +414,18 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-900/60 py-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-3 text-center sm:px-6 md:flex-row md:text-left">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 md:justify-start">
             <span className="font-semibold text-slate-400">AI Vin20K Master Quiz</span>
-            <span>·</span>
-            <span>750 câu hỏi luyện thi chuẩn Production cho 15 ngày học</span>
+            <span aria-hidden="true">·</span>
+            <span>{questions.length} câu hỏi luyện thi chuẩn Production: 15 Day cốt lõi + 5 bộ chuyên đề bổ sung</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-slate-400">
             <span>LLM Foundation</span>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <span>Agentic Systems</span>
-            <span>·</span>
-            <span>Production Architecture</span>
+            <span aria-hidden="true">·</span>
+            <span>Quantitative & System Design</span>
           </div>
         </div>
       </footer>

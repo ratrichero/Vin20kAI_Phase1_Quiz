@@ -268,8 +268,8 @@ export const ExamMode: React.FC<ExamModeProps> = ({
   // 1. Intro Screen
   if (examState === 'intro') {
     return (
-      <div className="max-w-3xl mx-auto space-y-8 py-6">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+      <div className="mx-auto max-w-3xl space-y-6 py-3 sm:space-y-8 sm:py-6">
+        <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl sm:space-y-6 sm:p-8">
           <div className="space-y-3 text-center">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
               <Clock className="w-8 h-8" />
@@ -279,7 +279,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
               Kiểm Tra Tổng Hợp Kiến Thức AI Vin20K
             </h1>
             <p className="text-slate-300 text-sm max-w-xl mx-auto">
-              Đề thi tổng hợp tiêu chuẩn mô phỏng kỳ kiểm tra năng lực kỹ sư AI: 100 câu trắc nghiệm được lấy ngẫu nhiên và phân bổ đều qua 15 ngày học.
+              Đề thi tổng hợp tiêu chuẩn mô phỏng kỳ kiểm tra năng lực kỹ sư AI: 100 câu trắc nghiệm được lấy ngẫu nhiên và phân bổ đều qua 15 Day cốt lõi. 5 bộ chuyên đề bổ sung dùng để luyện tự do và không nằm trong phạm vi đề thi.
             </p>
           </div>
 
@@ -297,7 +297,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
 
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
               <div className="text-xs text-slate-400">Tiêu chuẩn đạt</div>
-              <div className="text-xl font-bold text-emerald-400 font-mono mt-0.5">$\ge 70$ điểm</div>
+              <div className="text-xl font-bold text-emerald-400 font-mono mt-0.5">≥ 70 điểm</div>
             </div>
 
             <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5">
@@ -358,6 +358,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
     return (
       <ExamResultView
         result={examResult}
+        questions={allQuestions}
         bookmarks={bookmarks}
         onUpdateBookmarks={onUpdateBookmarks}
         onRetakeExam={startNewExam}
@@ -370,7 +371,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
   return (
     <div className="space-y-6 pb-20">
       {/* Sticky Exam Monitor Header */}
-      <div className="sticky top-14 z-30 bg-slate-900/95 backdrop-blur-md border border-slate-800 rounded-xl p-3.5 shadow-lg flex items-center justify-between gap-4">
+      <div className="sticky top-32 z-30 flex items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-900/95 p-2.5 shadow-lg backdrop-blur-md xl:top-16 sm:gap-4 sm:p-3.5">
         <div className="flex items-center gap-3">
           {/* Timer Display */}
           <div
@@ -400,25 +401,27 @@ export const ExamMode: React.FC<ExamModeProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setExamState(examState === 'active' ? 'paused' : 'active')}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition-colors flex items-center gap-1.5"
+            className="flex min-h-10 items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700 sm:px-3"
+            aria-label={examState === 'paused' ? 'Tiếp tục làm bài thi' : 'Tạm dừng làm bài thi'}
             title="Tạm dừng làm bài thi"
           >
             {examState === 'paused' ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
-            <span>{examState === 'paused' ? 'Tiếp tục' : 'Tạm dừng'}</span>
+            <span className="hidden sm:inline">{examState === 'paused' ? 'Tiếp tục' : 'Tạm dừng'}</span>
           </button>
 
           <button
             onClick={() => setShowSubmitConfirm(true)}
-            className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all active:scale-95"
+            className="min-h-10 rounded-lg bg-indigo-600 px-2.5 py-1.5 text-xs font-bold text-white shadow-md shadow-indigo-600/30 transition-all hover:bg-indigo-500 active:scale-95 sm:px-4"
           >
-            Nộp bài thi
+            <span className="sm:hidden">Nộp bài</span>
+            <span className="hidden sm:inline">Nộp bài thi</span>
           </button>
         </div>
       </div>
 
       {/* Paused Overlay */}
       {examState === 'paused' && (
-        <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center space-y-4 shadow-2xl">
+        <div className="space-y-4 rounded-2xl border border-slate-700 bg-slate-900 p-5 text-center shadow-2xl sm:p-8">
           <Pause className="w-12 h-12 text-indigo-400 mx-auto" />
           <h3 className="text-xl font-bold text-white">Bài thi đang tạm dừng</h3>
           <p className="text-slate-400 text-sm max-w-md mx-auto">
@@ -437,10 +440,10 @@ export const ExamMode: React.FC<ExamModeProps> = ({
       {examState === 'active' && currentQ && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left: Active Question Card */}
-          <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+          <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl sm:space-y-6 sm:p-6 lg:col-span-8 lg:p-8">
             {/* Question Meta */}
-            <div className="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2 text-xs text-slate-400">
+              <div className="flex min-w-0 items-center gap-2">
                 <span className="font-mono text-indigo-400 font-bold">
                   Câu {currentIndex + 1} / 100
                 </span>
@@ -466,7 +469,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
 
             {/* Prompt */}
             <div className="space-y-2">
-              <h3 className="text-lg sm:text-xl font-bold text-white leading-relaxed tracking-tight">
+              <h3 className="break-words text-base font-bold leading-relaxed tracking-tight text-white sm:text-xl">
                 {currentQ.question}
               </h3>
             </div>
@@ -481,7 +484,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
                   <button
                     key={optIndex}
                     onClick={() => handleSelectOption(optKey)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all duration-150 flex items-start gap-3.5 cursor-pointer active:scale-[0.99] ${
+                    className={`flex min-h-11 w-full items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-150 active:scale-[0.99] sm:gap-3.5 sm:p-4 ${
                       isSelected
                         ? 'border-indigo-500 bg-indigo-950/40 text-indigo-100 shadow-md shadow-indigo-950/30'
                         : 'border-slate-800 bg-slate-900/60 hover:bg-slate-800/60 text-slate-300 hover:border-slate-700'
@@ -497,7 +500,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
                       {optKey}
                     </span>
 
-                    <span className="text-sm sm:text-base leading-relaxed pt-0.5 flex-1">
+                    <span className="min-w-0 flex-1 break-words pt-0.5 text-sm leading-relaxed sm:text-base">
                       {optionText}
                     </span>
                   </button>
@@ -506,11 +509,11 @@ export const ExamMode: React.FC<ExamModeProps> = ({
             </div>
 
             {/* Bottom Navigation */}
-            <div className="pt-6 border-t border-slate-800 flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-2 border-t border-slate-800 pt-5 sm:gap-4 sm:pt-6">
               <button
                 onClick={handlePrev}
                 disabled={currentIndex === 0}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium border transition-colors ${
+                className={`flex min-h-11 items-center gap-1 rounded-xl border px-2.5 py-2 text-[11px] font-medium transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
                   currentIndex === 0
                     ? 'border-slate-800 text-slate-600 cursor-not-allowed'
                     : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200'
@@ -531,7 +534,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
               <button
                 onClick={handleNext}
                 disabled={currentIndex === questions.length - 1}
-                className={`flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors ${
+                className={`flex min-h-11 items-center gap-1 rounded-xl px-2.5 py-2 text-[11px] font-semibold transition-colors sm:gap-1.5 sm:px-5 sm:text-sm ${
                   currentIndex === questions.length - 1
                     ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                     : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 active:scale-95'
@@ -544,7 +547,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
           </div>
 
           {/* Right: 100 Questions Matrix Drawer */}
-          <div className="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-3 sm:p-4 xl:col-span-4 xl:p-5 lg:col-span-4">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 font-bold text-white">
                 <Layers className="w-4 h-4 text-indigo-400" />
@@ -584,7 +587,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
             </div>
 
             {/* Matrix Button Grid */}
-            <div className="grid grid-cols-10 gap-1.5 max-h-[380px] overflow-y-auto pr-1">
+            <div className="grid max-h-[380px] grid-cols-6 gap-1.5 overflow-y-auto pr-1 min-[480px]:grid-cols-8 sm:grid-cols-10 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
               {questions.map((q, idx) => {
                 const isSelected = Boolean(answers[q.id]);
                 const isCurr = idx === currentIndex;
@@ -602,7 +605,7 @@ export const ExamMode: React.FC<ExamModeProps> = ({
                       playClickSound();
                       setCurrentIndex(idx);
                     }}
-                    className={`relative h-7.5 rounded text-[11px] font-mono flex items-center justify-center transition-all ${btnStyle} ${
+                    className={`relative flex h-10 items-center justify-center rounded text-[11px] font-mono transition-all ${btnStyle} ${
                       isCurr ? 'ring-2 ring-emerald-400 scale-105 z-10' : ''
                     }`}
                     title={`Câu ${idx + 1}`}
@@ -645,8 +648,8 @@ export const ExamMode: React.FC<ExamModeProps> = ({
 
       {/* Submit Confirmation Modal */}
       {showSubmitConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-4">
+          <div className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-md space-y-4 overflow-y-auto overscroll-contain rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-2xl sm:max-h-[calc(100dvh-2rem)] sm:space-y-5 sm:p-6">
             <div className="text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center mx-auto text-indigo-400">
                 <Award className="w-6 h-6" />

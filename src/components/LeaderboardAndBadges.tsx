@@ -126,18 +126,18 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({
   return (
     <div className="space-y-8 pb-20 max-w-5xl mx-auto">
       {/* Top Profile Summary Strip */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-4 text-center md:text-left">
+      <div className="flex flex-col items-center justify-between gap-5 rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 p-4 shadow-xl sm:gap-6 sm:p-6 md:flex-row">
+        <div className="flex min-w-0 items-center gap-3 text-center sm:gap-4 md:text-left">
           <div className="text-4xl sm:text-5xl bg-slate-950 border border-slate-800 rounded-2xl w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center shrink-0 shadow-inner">
             {userProfile.avatar}
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-center justify-center md:justify-start gap-2">
-              <h2 className="text-lg sm:text-xl font-extrabold text-white">{userProfile.name}</h2>
+          <div className="min-w-0 space-y-1">
+            <div className="flex min-w-0 items-center justify-center gap-2 md:justify-start">
+              <h2 className="min-w-0 break-words text-lg font-extrabold text-white sm:text-xl">{userProfile.name}</h2>
               <button
                 onClick={() => setIsEditingProfile(true)}
-                className="p-1 rounded text-slate-400 hover:text-indigo-400 transition-colors"
+                className="flex min-h-10 min-w-10 shrink-0 items-center justify-center rounded text-slate-400 transition-colors hover:text-indigo-400"
                 title="Đổi tên & avatar"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -158,21 +158,21 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({
 
         {/* User Badges & Quick Stats */}
         <div className="grid grid-cols-3 gap-3 text-center w-full md:w-auto">
-          <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-[90px]">
+          <div className="bg-slate-950/70 border border-slate-800 min-w-0 rounded-xl p-2 sm:min-w-[90px] sm:p-3">
             <div className="text-lg sm:text-xl font-bold font-mono text-emerald-400">
               {unlockedCount} / {badges.length}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">Huy hiệu</div>
           </div>
 
-          <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-[90px]">
+          <div className="bg-slate-950/70 border border-slate-800 min-w-0 rounded-xl p-2 sm:min-w-[90px] sm:p-3">
             <div className="text-lg sm:text-xl font-bold font-mono text-indigo-400">
               {examHighScore > 0 ? `${examHighScore} đ` : 'Chưa thi'}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">Điểm thi cao nhất</div>
           </div>
 
-          <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 min-w-[90px]">
+          <div className="bg-slate-950/70 border border-slate-800 min-w-0 rounded-xl p-2 sm:min-w-[90px] sm:p-3">
             <div className="text-lg sm:text-xl font-bold font-mono text-amber-400">
               {totalUserCorrect * 10 + examHighScore * 25 + unlockedCount * 100}
             </div>
@@ -183,8 +183,8 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({
 
       {/* Profile Edit Modal */}
       {isEditingProfile && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl animate-scaleUp">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-4">
+          <div className="max-h-[calc(100dvh-1.5rem)] w-full max-w-sm space-y-4 overflow-y-auto overscroll-contain rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-2xl animate-scaleUp sm:max-h-[calc(100dvh-2rem)] sm:p-6">
             <h3 className="text-base font-bold text-white">Chỉnh sửa hồ sơ học viên</h3>
 
             <div className="space-y-3 text-xs">
@@ -194,7 +194,7 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({
                   type="text"
                   value={tempName}
                   onChange={(e) => setTempName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none sm:text-xs"
                 />
               </div>
 
@@ -204,18 +204,18 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({
                   type="text"
                   value={tempTitle}
                   onChange={(e) => setTempTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500"
+                  className="min-h-11 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none sm:text-xs"
                 />
               </div>
 
               <div>
                 <label className="text-slate-300 block mb-1.5 font-semibold">Chọn biểu tượng đại diện (Avatar):</label>
-                <div className="grid grid-cols-6 gap-2 text-2xl">
+                <div className="grid grid-cols-4 gap-2 text-2xl sm:grid-cols-6">
                   {['👨‍💻', '👩‍💻', '🚀', '🧠', '⚡', '🤖', '🛡️', '💡', '👑', '🔥', '✨', '🎯'].map((av) => (
                     <button
                       key={av}
                       onClick={() => setTempAvatar(av)}
-                      className={`p-2 rounded-xl border flex items-center justify-center transition-all ${
+                      className={`flex min-h-11 items-center justify-center rounded-xl border p-2 transition-all ${
                         tempAvatar === av
                           ? 'border-indigo-500 bg-indigo-950/60 scale-110'
                           : 'border-slate-800 bg-slate-950 hover:border-slate-700'
@@ -247,10 +247,10 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({
       )}
 
       {/* Main Mode Tabs */}
-      <div className="flex items-center gap-3 border-b border-slate-800 text-sm">
+      <div className="mobile-nav-scroll flex items-center gap-3 overflow-x-auto border-b border-slate-800 text-sm">
         <button
           onClick={() => setActiveTab('leaderboard')}
-          className={`pb-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-2 ${
+          className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 pb-3 font-semibold transition-colors ${
             activeTab === 'leaderboard'
               ? 'border-indigo-500 text-indigo-300'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -262,7 +262,7 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({
 
         <button
           onClick={() => setActiveTab('badges')}
-          className={`pb-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-2 ${
+          className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 pb-3 font-semibold transition-colors ${
             activeTab === 'badges'
               ? 'border-indigo-500 text-indigo-300'
               : 'border-transparent text-slate-400 hover:text-slate-200'

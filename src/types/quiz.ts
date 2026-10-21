@@ -7,17 +7,23 @@ export interface Question {
   options: string[]; // 4 options
   answer: 'A' | 'B' | 'C' | 'D' | string;
   hint: string;
+  'A explanation'?: string;
+  'B explanation'?: string;
+  'C explanation'?: string;
+  'D explanation'?: string;
   explanation: string;
 }
 
 export interface DaySummary {
-  dayId: string; // "Day 01"
+  dayId: string; // "Day 01" | "Quantitative" | "Specialized 01"
   dayNum: number; // 1
   title: string;
   topics: string[];
   totalQuestions: number;
   completedCount: number;
   correctCount: number;
+  /** true for the original 15-Day curriculum, false for supplemental sets */
+  isCore: boolean;
 }
 
 export interface UserAnswerRecord {

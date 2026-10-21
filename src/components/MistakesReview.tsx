@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Question } from '../types/quiz';
 import { PracticeHistoryMap, toggleBookmark, markMistakeResolved, recordPracticeAnswer } from '../utils/storage';
+import { OptionExplanations } from './OptionExplanations';
 import { playClickSound, playCorrectSound, playIncorrectSound } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import {
@@ -19,7 +20,6 @@ import {
   Sparkles,
   Trophy,
   AlertCircle,
-  Check,
   Zap,
 } from 'lucide-react';
 
@@ -180,8 +180,8 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
   // EMPTY STATE: No mistakes found!
   if (allMistakeQuestions.length === 0) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6 py-8 pb-20">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 sm:p-10 text-center space-y-6 shadow-xl">
+      <div className="mx-auto max-w-3xl space-y-5 py-4 pb-16 sm:space-y-6 sm:py-8 sm:pb-20">
+        <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-center shadow-xl sm:space-y-6 sm:p-10">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white mx-auto shadow-lg shadow-emerald-600/30">
             <Trophy className="w-10 h-10" />
           </div>
@@ -216,20 +216,20 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-20">
+    <div className="mx-auto max-w-4xl space-y-5 pb-16 sm:space-y-6 sm:pb-20">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-rose-900/30 rounded-2xl p-5 shadow-xl">
-        <div className="flex items-center gap-3.5">
+      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-rose-900/30 bg-slate-900 p-4 shadow-xl sm:flex-row sm:items-center sm:gap-4 sm:p-5">
+        <div className="flex min-w-0 items-center gap-3.5">
           <button
             onClick={onBackToOverview}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl bg-slate-800 p-2 text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
             title="Quay lại danh mục"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
 
-          <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-rose-400 uppercase tracking-wider">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-rose-400 uppercase tracking-wider">
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Chế độ Củng Cố Điểm Yếu</span>
             </div>
@@ -240,8 +240,8 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
         </div>
 
         {/* Filter Day Dropdown */}
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-400 hidden sm:inline">Lọc theo:</span>
+        <div className="flex w-full items-center gap-2 text-xs sm:w-auto">
+          <span className="hidden text-slate-400 sm:inline">Lọc theo:</span>
           <select
             value={selectedDayFilter}
             onChange={(e) => {
@@ -250,7 +250,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
               setShowHint(false);
               setShowExplanation(false);
             }}
-            className="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-indigo-500 font-mono text-xs"
+            className="min-h-11 min-w-0 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 font-mono text-xs text-slate-200 focus:border-indigo-500 focus:outline-none sm:w-auto sm:max-w-xs"
           >
             <option value="all">Tất cả các Day có câu sai ({allMistakeQuestions.length})</option>
             {daysWithMistakes.map((d) => (
@@ -263,7 +263,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
       </div>
 
       {/* Session Progress Strip */}
-      <div className="flex items-center justify-between text-xs text-slate-400 bg-slate-900/80 border border-slate-800 rounded-xl px-4 py-2.5">
+      <div className="flex flex-col gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2.5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-4">
         <div className="flex items-center gap-2">
           <span>Đang ôn câu:</span>
           <strong className="text-white font-mono">
@@ -289,14 +289,14 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
 
       {/* Question Card */}
       {currentQ && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative">
+        <div className="relative space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-xl sm:space-y-6 sm:p-6 lg:p-8">
           {/* Top Row: Meta info & Past Error Note */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800/80 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-rose-400 font-bold px-2 py-0.5 rounded bg-rose-950/60 border border-rose-800/50">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="shrink-0 rounded border border-rose-800/50 bg-rose-950/60 px-2 py-0.5 font-mono font-bold text-rose-400">
                 {currentQ.id}
               </span>
-              <span className="text-slate-300 font-semibold">{currentQ.day}: {currentQ.day_title}</span>
+              <span className="min-w-0 break-words font-semibold text-slate-300">{currentQ.day}: {currentQ.day_title}</span>
               <span className="hidden sm:inline">·</span>
               <span className="hidden sm:inline text-slate-400">{currentQ.topic}</span>
             </div>
@@ -310,7 +310,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
 
               <button
                 onClick={handleToggleBookmark}
-                className={`p-1 rounded text-slate-400 hover:text-amber-400 transition-colors ${
+                className={`flex min-h-10 min-w-10 items-center justify-center rounded text-slate-400 transition-colors hover:text-amber-400 ${
                   isBookmarked ? 'text-amber-400' : ''
                 }`}
                 title="Lưu câu hỏi"
@@ -322,7 +322,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
 
           {/* Prompt */}
           <div className="space-y-2">
-            <h3 className="text-lg sm:text-xl font-bold text-white leading-relaxed tracking-tight">
+            <h3 className="break-words text-base font-bold leading-relaxed tracking-tight text-white sm:text-xl">
               {currentQ.question}
             </h3>
           </div>
@@ -356,7 +356,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
                 <button
                   key={optIndex}
                   onClick={() => handleSelectOption(optKey)}
-                  className={`w-full text-left p-4 rounded-xl border transition-all duration-150 flex items-start gap-3.5 cursor-pointer active:scale-[0.99] ${cardClasses}`}
+                  className={`flex min-h-11 w-full items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-150 active:scale-[0.99] sm:gap-3.5 sm:p-4 ${cardClasses}`}
                 >
                   <span
                     className={`w-7 h-7 rounded-lg border flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-colors ${badgeClasses}`}
@@ -364,7 +364,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
                     {optKey}
                   </span>
 
-                  <span className="text-sm sm:text-base leading-relaxed pt-0.5 flex-1">
+                  <span className="min-w-0 flex-1 break-words pt-0.5 text-sm leading-relaxed sm:text-base">
                     {optionText}
                   </span>
 
@@ -394,26 +394,28 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
               onClick={() => setShowHint((prev) => !prev)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`flex min-h-10 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-colors sm:text-xs ${
                 showHint
                   ? 'bg-amber-950/60 text-amber-300 border-amber-700/60'
                   : 'bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
               <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-              <span>{showHint ? 'Ẩn gợi ý' : 'Gợi ý xem lại (Phím H)'}</span>
+              <span>{showHint ? 'Ẩn gợi ý' : 'Gợi ý'}</span>
+              <span className="hidden sm:inline">{showHint ? '' : ' xem lại (Phím H)'}</span>
             </button>
 
             <button
               onClick={() => setShowExplanation((prev) => !prev)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`flex min-h-10 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-colors sm:text-xs ${
                 showExplanation
                   ? 'bg-indigo-950/60 text-indigo-300 border-indigo-700/60'
                   : 'bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
               <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
-              <span>{showExplanation ? 'Ẩn giải thích' : 'Xem giải thích chi tiết'}</span>
+              <span className="sm:hidden">{showExplanation ? 'Ẩn giải thích' : 'Giải thích'}</span>
+              <span className="hidden sm:inline">{showExplanation ? 'Ẩn giải thích' : 'Xem giải thích chi tiết'}</span>
             </button>
           </div>
 
@@ -427,23 +429,19 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
             </div>
           )}
 
-          {/* Detailed Explanation */}
+          {/* Per-option explanation details */}
           {showExplanation && (
-            <div className="p-4 sm:p-5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3 text-xs leading-relaxed animate-fadeIn">
-              <div className="flex items-center gap-2 font-bold text-white text-sm">
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span>Đáp án chuẩn xác là phương án: {currentQ.answer}</span>
-              </div>
-              <p className="text-slate-200 text-xs sm:text-sm">{currentQ.explanation}</p>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 animate-fadeIn sm:p-5">
+              <OptionExplanations question={currentQ} />
             </div>
           )}
 
           {/* Bottom Nav */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-2 border-t border-slate-800 pt-4 sm:gap-4">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium border transition-colors ${
+              className={`flex min-h-11 items-center gap-1 rounded-xl border px-2.5 py-2 text-[11px] font-medium transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
                 currentIndex === 0
                   ? 'border-slate-800 text-slate-600 cursor-not-allowed'
                   : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200'
@@ -460,7 +458,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
             <button
               onClick={handleNext}
               disabled={currentIndex === filteredMistakes.length - 1}
-              className={`flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors ${
+              className={`flex min-h-11 items-center gap-1 rounded-xl px-2.5 py-2 text-[11px] font-semibold transition-colors sm:gap-1.5 sm:px-5 sm:text-sm ${
                 currentIndex === filteredMistakes.length - 1
                   ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                   : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 active:scale-95'
@@ -474,7 +472,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
       )}
 
       {/* Matrix Quick Navigator for Mistakes */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+      <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900 p-3 sm:p-5">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2 text-slate-300 font-semibold">
             <Layers className="w-4 h-4 text-rose-400" />
@@ -486,7 +484,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-10 sm:grid-cols-15 md:grid-cols-20 gap-1.5 max-h-[220px] overflow-y-auto pr-1">
+        <div className="grid max-h-[220px] grid-cols-5 gap-1.5 overflow-y-auto pr-1 min-[420px]:grid-cols-8 sm:grid-cols-10 md:grid-cols-15 lg:grid-cols-20">
           {filteredMistakes.map((q, idx) => {
             const isResolved = sessionResolvedIds.includes(q.id);
             const isCurr = idx === currentIndex;
@@ -500,7 +498,7 @@ export const MistakesReview: React.FC<MistakesReviewProps> = ({
                   setShowHint(false);
                   setShowExplanation(false);
                 }}
-                className={`h-8 rounded-lg text-xs font-mono font-semibold flex items-center justify-center transition-all ${
+                className={`flex h-10 items-center justify-center rounded-lg font-mono text-xs font-semibold transition-all sm:h-9 ${
                   isResolved
                     ? 'bg-emerald-600 text-white font-bold'
                     : 'bg-rose-950/60 text-rose-300 border border-rose-800/60 hover:bg-rose-900/60'
