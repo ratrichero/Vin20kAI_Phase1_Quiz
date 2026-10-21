@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Question, DaySummary, AppMode, ExamResult, Badge } from './types/quiz';
 import { loadAllQuestions, getDayList, getQuestionsForDay } from './data/quizData';
 import {
@@ -459,6 +460,9 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
