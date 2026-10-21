@@ -13,6 +13,7 @@ import {
   Sliders,
   Trophy,
   RotateCcw,
+  GraduationCap,
 } from 'lucide-react';
 
 interface DaySelectorProps {
@@ -25,6 +26,7 @@ interface DaySelectorProps {
   onStartCustomPractice: () => void;
   onOpenLeaderboard: () => void;
   onStartMistakesReview: () => void;
+  onOpenCourse?: (dayNum?: number) => void;
 }
 
 export const DaySelector: React.FC<DaySelectorProps> = ({
@@ -37,6 +39,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
   onStartCustomPractice,
   onOpenLeaderboard,
   onStartMistakesReview,
+  onOpenCourse,
 }) => {
   // Compute total answered and total correct
   let totalAnswered = 0;
@@ -78,6 +81,8 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
     const progressPercent =
       questionCount > 0 ? Math.min(100, Math.round((stats.answered / questionCount) * 100)) : 0;
     const isSupplemental = !day.isCore;
+    const coreDayMatch = day.dayId.match(/Day\s*(\d+)/i);
+    const coreDayNum = coreDayMatch ? parseInt(coreDayMatch[1], 10) : null;
 
     return (
       <button
@@ -165,16 +170,40 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
             <span>Luyện {questionCount} câu</span>
           </span>
 
-          <span
-            className={`flex items-center gap-1 font-semibold transition-colors ${
-              isSupplemental
-                ? 'text-cyan-400 group-hover:text-cyan-300'
-                : 'text-indigo-400 group-hover:text-indigo-300'
-            }`}
-          >
-            <span>{stats.answered > 0 ? 'Tiếp tục luyện' : 'Bắt đầu ngay'}</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </span>
+          <div className="flex items-center gap-2">
+            {coreDayNum && onOpenCourse && (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenCourse(coreDayNum);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    onOpenCourse(coreDayNum);
+                  }
+                }}
+                className="flex items-center gap-1 rounded-lg border border-indigo-500/40 bg-indigo-950/60 px-2 py-1 text-[11px] font-semibold text-indigo-300 hover:bg-indigo-900/80 hover:text-white transition-colors cursor-pointer"
+                title={`Đọc bài giảng lý thuyết ${day.dayId}`}
+              >
+                <GraduationCap className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Lý thuyết</span>
+              </span>
+            )}
+
+            <span
+              className={`flex items-center gap-1 font-semibold transition-colors ${
+                isSupplemental
+                  ? 'text-cyan-400 group-hover:text-cyan-300'
+                  : 'text-indigo-400 group-hover:text-indigo-300'
+              }`}
+            >
+              <span>{stats.answered > 0 ? 'Tiếp tục luyện' : 'Bắt đầu ngay'}</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </span>
+          </div>
         </div>
       </button>
     );
@@ -237,6 +266,16 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
                 <Trophy className="w-4 h-4 text-amber-400" />
                 <span>Bảng xếp hạng</span>
               </button>
+
+              {onOpenCourse && (
+                <button
+                  onClick={onOpenCourse}
+                  className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-indigo-700/50 bg-indigo-950/70 px-4 py-2.5 text-sm font-semibold text-indigo-200 transition-all hover:scale-[1.02] hover:bg-indigo-900/80 active:scale-95 sm:w-auto"
+                >
+                  <GraduationCap className="w-4 h-4 text-indigo-400" />
+                  <span>Đọc bài giảng (Course)</span>
+                </button>
+              )}
             </div>
           </div>
 

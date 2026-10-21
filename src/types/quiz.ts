@@ -97,6 +97,7 @@ export interface CustomPracticeConfig {
 
 export type AppMode =
   | 'day_practice'
+  | 'course'
   | 'custom_practice'
   | 'mistakes_review'
   | 'exam'

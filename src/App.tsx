@@ -24,6 +24,7 @@ import {
 import { Navbar } from './components/Navbar';
 import { DaySelector } from './components/DaySelector';
 import { DayPractice } from './components/DayPractice';
+import { CourseView } from './components/CourseView';
 import { CustomPractice } from './components/CustomPractice';
 import { MistakesReview } from './components/MistakesReview';
 import { LeaderboardAndBadges } from './components/LeaderboardAndBadges';
@@ -43,6 +44,7 @@ export default function App() {
   // App Navigation State
   const [currentMode, setCurrentMode] = useState<AppMode>('day_practice');
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
+  const [selectedCourseDay, setSelectedCourseDay] = useState<number | null>(null);
   const [reviewingExam, setReviewingExam] = useState<ExamResult | null>(null);
 
   // User persistent data
@@ -195,6 +197,21 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenCourse = (dayNum?: number | string) => {
+    let num: number | null = null;
+    if (typeof dayNum === 'number') {
+      num = dayNum;
+    } else if (typeof dayNum === 'string') {
+      const match = dayNum.match(/\d+/);
+      if (match) num = parseInt(match[0], 10);
+    }
+    setSelectedCourseDay(num);
+    setSelectedDayId(null);
+    setReviewingExam(null);
+    setCurrentMode('course');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleReviewExamResult = (exam: ExamResult) => {
     setReviewingExam(exam);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -269,6 +286,9 @@ export default function App() {
         onSelectMode={(mode) => {
           setCurrentMode(mode);
           setReviewingExam(null);
+          if (mode === 'course') {
+            setSelectedCourseDay(null);
+          }
           if (mode !== 'day_practice') {
             setSelectedDayId(null);
           }
@@ -313,6 +333,7 @@ export default function App() {
                     onUpdateHistory={handleUpdateHistory}
                     onUpdateBookmarks={handleUpdateBookmarks}
                     onSelectNextDay={handleSelectDay}
+                    onOpenCourse={handleOpenCourse}
                   />
                 ) : (
                   <DaySelector
@@ -323,11 +344,20 @@ export default function App() {
                     onStartExam={handleStartExam}
                     onOpenQuestionBank={handleOpenQuestionBank}
                     onStartCustomPractice={handleStartCustomPractice}
-                    onOpenLeaderboard={handleOpenLeaderboard}
+                    onStartLeaderboard={handleOpenLeaderboard}
                     onStartMistakesReview={handleStartMistakesReview}
+                    onOpenCourse={handleOpenCourse}
                   />
                 )}
               </>
+            )}
+
+            {/* Mode: Course (Bài giảng 15 Day) */}
+            {currentMode === 'course' && (
+              <CourseView
+                initialDayNum={selectedCourseDay}
+                onSelectPracticeDay={handleSelectDay}
+              />
             )}
 
             {/* Mode 2: Custom Practice (10 - 15 questions by specific topics/skills) */}

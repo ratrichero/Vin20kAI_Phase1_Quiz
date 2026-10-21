@@ -4,6 +4,7 @@ import { AppMode } from '../types/quiz';
 import {
   Sparkles,
   BookOpen,
+  GraduationCap,
   Clock,
   Database,
   BarChart3,
@@ -33,6 +34,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { mode: 'day_practice', label: 'Theo Day', mobileLabel: 'Theo Day', icon: BookOpen, tone: 'indigo' },
+  { mode: 'course', label: 'Course', mobileLabel: 'Course', icon: GraduationCap, tone: 'indigo' },
   { mode: 'mistakes_review', label: 'Ôn câu sai', mobileLabel: 'Ôn câu sai', icon: RotateCcw, tone: 'rose' },
   { mode: 'custom_practice', label: 'Luyện tùy chỉnh', mobileLabel: 'Tùy chỉnh', icon: Sliders, tone: 'indigo' },
   { mode: 'exam', label: 'Thi thử', mobileLabel: 'Thi thử', icon: Clock, tone: 'indigo' },

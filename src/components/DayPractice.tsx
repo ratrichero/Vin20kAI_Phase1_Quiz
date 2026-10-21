@@ -20,6 +20,7 @@ import {
   Award,
   Sparkles,
   Layers,
+  GraduationCap,
 } from 'lucide-react';
 
 interface DayPracticeProps {
@@ -32,6 +33,7 @@ interface DayPracticeProps {
   onUpdateHistory: (history: PracticeHistoryMap) => void;
   onUpdateBookmarks: (bookmarks: string[]) => void;
   onSelectNextDay?: (nextDayId: string) => void;
+  onOpenCourse?: (dayNum?: number | string) => void;
 }
 
 export const DayPractice: React.FC<DayPracticeProps> = ({
@@ -44,6 +46,7 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
   onUpdateHistory,
   onUpdateBookmarks,
   onSelectNextDay,
+  onOpenCourse,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showHint, setShowHint] = useState(false);
@@ -52,6 +55,9 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [filterWrongOnly, setFilterWrongOnly] = useState(false);
+
+  const coreDayMatch = dayId.match(/Day\s*(\d+)/i);
+  const coreDayNum = coreDayMatch ? parseInt(coreDayMatch[1], 10) : null;
 
   const currentQ = questions[currentIndex] || questions[0];
 
@@ -248,6 +254,18 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
         {/* Action Toggles */}
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          {coreDayNum && onOpenCourse && (
+            <button
+              onClick={() => onOpenCourse(coreDayNum)}
+              className="flex min-h-10 items-center gap-1.5 rounded-lg border border-indigo-700/50 bg-indigo-950/70 px-2.5 text-[11px] font-semibold text-indigo-300 transition-colors hover:bg-indigo-900/80 sm:px-3 sm:text-xs"
+              title={`Đọc bài giảng lý thuyết ${dayId}`}
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="hidden sm:inline">Bài giảng {dayId}</span>
+              <span className="sm:hidden">Bài giảng</span>
+            </button>
+          )}
+
           <button
             onClick={() => setInstantFeedback((prev) => !prev)}
             className={`flex min-h-10 items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-medium transition-colors sm:px-3 sm:text-xs ${
@@ -432,8 +450,27 @@ export const DayPractice: React.FC<DayPracticeProps> = ({
 
           {/* Explanation Box */}
           {showExplanation && (
-            <div className="rounded-xl border border-indigo-600/30 bg-indigo-950/30 p-3 animate-fadeIn sm:p-5">
-              <OptionExplanations question={currentQ} />
+            <div className="space-y-3 animate-fadeIn">
+              <div className="rounded-xl border border-indigo-600/30 bg-indigo-950/30 p-3 sm:p-5">
+                <OptionExplanations question={currentQ} />
+              </div>
+
+              {coreDayNum && onOpenCourse && (
+                <div className="flex items-center justify-between rounded-xl border border-indigo-500/25 bg-gradient-to-r from-indigo-950/50 via-slate-900 to-slate-950 p-3 text-xs text-indigo-200">
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>Cần đào sâu sơ đồ và kiến thức nền tảng của {dayId}?</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onOpenCourse(coreDayNum)}
+                    className="font-bold text-indigo-300 hover:text-white hover:underline flex items-center gap-1 shrink-0"
+                  >
+                    <span>Xem bài giảng {dayId}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

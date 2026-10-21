@@ -1,0 +1,276 @@
+[
+  {
+    "dayNum": 1,
+    "dayId": "Day 01",
+    "title": "Nền tảng AI, LLM và Token Economy",
+    "fullTitle": "Day 01 — Nền tảng AI, LLM và Token Economy",
+    "phase": "Giai đoạn 1: Nền tảng & Xác định sản phẩm",
+    "phaseShort": "Nền tảng & SP",
+    "keyIdea": "LLM là mô hình dự đoán token tiếp theo; chất lượng ứng dụng còn phụ thuộc vào dữ liệu ngữ cảnh, công cụ và cách vận hành.",
+    "sections": [
+      "1. Bản đồ AI",
+      "2. Agent, tool và harness",
+      "3. LLM hoạt động thế nào?",
+      "4. Chọn model và tính chi phí",
+      "5. Gọi API an toàn và có thể đo",
+      "Ghi nhớ nhanh"
+    ],
+    "filename": "day01_course.md",
+    "path": "/course/day01_course.md"
+  },
+  {
+    "dayNum": 2,
+    "dayId": "Day 02",
+    "title": "Chọn đúng bài toán kinh doanh cho AI",
+    "fullTitle": "Day 02 — Chọn đúng bài toán kinh doanh cho AI",
+    "phase": "Giai đoạn 1: Nền tảng & Xác định sản phẩm",
+    "phaseShort": "Nền tảng & SP",
+    "keyIdea": "Bắt đầu từ người dùng, quy trình và chỉ số; chỉ chọn model/agent sau khi biết AI có tạo giá trị tốt hơn cách đơn giản hơn hay không.",
+    "sections": [
+      "1. Tránh bốn bẫy phổ biến",
+      "2. Chọn mức tự động hóa",
+      "3. Vòng đời sản phẩm AI và các cổng quyết định",
+      "4. Kiểm tra mức sẵn sàng bằng 5 câu hỏi",
+      "5. Viết Problem Statement",
+      "6. Phân rã kiến trúc và trách nhiệm"
+    ],
+    "filename": "day02_course.md",
+    "path": "/course/day02_course.md"
+  },
+  {
+    "dayNum": 3,
+    "dayId": "Day 03",
+    "title": "Từ chatbot đến agent: ReAct và tool calling",
+    "fullTitle": "Day 03 — Từ chatbot đến agent: ReAct và tool calling",
+    "phase": "Giai đoạn 1: Nền tảng & Xác định sản phẩm",
+    "phaseShort": "Nền tảng & SP",
+    "keyIdea": "Agent hữu ích khi phải chọn hành động dựa trên kết quả trung gian; mỗi tool cần hợp đồng rõ, giới hạn quyền và trace để kiểm tra.",
+    "sections": [
+      "1. Phân biệt các mức hệ thống",
+      "2. Agentic Fit: có thật sự cần agent không?",
+      "3. ReAct: Thought → Action → Observation",
+      "4. Tool schema tốt",
+      "5. ReAct, function calling và hybrid",
+      "6. Chi phí, an toàn và đánh giá"
+    ],
+    "filename": "day03_course.md",
+    "path": "/course/day03_course.md"
+  },
+  {
+    "dayNum": 4,
+    "dayId": "Day 04",
+    "title": "Context, loop và harness engineering",
+    "fullTitle": "Day 04 — Context, loop và harness engineering",
+    "phase": "Giai đoạn 1: Nền tảng & Xác định sản phẩm",
+    "phaseShort": "Nền tảng & SP",
+    "keyIdea": "Chất lượng agent không chỉ nằm ở prompt/model; context quyết định model thấy gì, loop quyết định nó làm gì tiếp, harness quyết định điều gì được phép.",
+    "sections": [
+      "1. Bốn lớp lồng nhau",
+      "2. Lắp context packet có chủ đích",
+      "3. Thiết kế tool và xử lý kết quả",
+      "4. Bốn cơ chế bắt buộc của loop",
+      "5. Harness, phê duyệt và đo lường"
+    ],
+    "filename": "day04_course.md",
+    "path": "/course/day04_course.md"
+  },
+  {
+    "dayNum": 5,
+    "dayId": "Day 05",
+    "title": "Product thinking và yêu cầu cho AI product",
+    "fullTitle": "Day 05 — Product thinking và yêu cầu cho AI product",
+    "phase": "Giai đoạn 1: Nền tảng & Xác định sản phẩm",
+    "phaseShort": "Nền tảng & SP",
+    "keyIdea": "Chuyển giá trị và rủi ro thành yêu cầu có thể xây, kiểm thử và vận hành; đừng để “AI thông minh” là tiêu chí nghiệm thu.",
+    "sections": [
+      "1. AI product khác phần mềm xác định",
+      "2. Đặt metric cho giá trị thật",
+      "3. Responsible AI và nghiên cứu người dùng",
+      "4. Viết yêu cầu có thể kiểm thử",
+      "5. PRD và risk register"
+    ],
+    "filename": "day05_course.md",
+    "path": "/course/day05_course.md"
+  },
+  {
+    "dayNum": 6,
+    "dayId": "Day 06",
+    "title": "Quản lý sản phẩm và dự án AI",
+    "fullTitle": "Day 06 — Quản lý sản phẩm và dự án AI",
+    "phase": "Giai đoạn 2: Xây hệ thống & Dữ liệu",
+    "phaseShort": "Hệ thống & Data",
+    "keyIdea": "Quản lý dự án AI bằng chu kỳ giả thuyết–thử nghiệm–đánh giá, định giá phần chưa chắc chắn và chỉ mở rộng khi có bằng chứng.",
+    "sections": [
+      "1. Agile kết hợp phương pháp khoa học",
+      "2. Chọn đúng mức thử nghiệm",
+      "3. Thiết kế PoC gọn",
+      "4. Tính ROI có giả định rõ",
+      "5. Trình bày với stakeholder"
+    ],
+    "filename": "day06_course.md",
+    "path": "/course/day06_course.md"
+  },
+  {
+    "dayNum": 7,
+    "dayId": "Day 07",
+    "title": "Nền tảng dữ liệu: embedding, chunking và vector store",
+    "fullTitle": "Day 07 — Nền tảng dữ liệu: embedding, chunking và vector store",
+    "phase": "Giai đoạn 2: Xây hệ thống & Dữ liệu",
+    "phaseShort": "Hệ thống & Data",
+    "keyIdea": "RAG chỉ tốt khi dữ liệu được trích xuất, chia đoạn, nhúng, lập chỉ mục và truy xuất đúng; lỗi dữ liệu thường không làm hệ thống crash mà âm thầm làm câu trả lời sai.",
+    "sections": [
+      "1. Chọn đúng loại dữ liệu",
+      "2. Pipeline dữ liệu cho retrieval",
+      "3. Embedding và tìm kiếm",
+      "4. Đo chất lượng và xử lý lỗi",
+      "5. Quyền truy cập và bảo mật"
+    ],
+    "filename": "day07_course.md",
+    "path": "/course/day07_course.md"
+  },
+  {
+    "dayNum": 8,
+    "dayId": "Day 08",
+    "title": "RAG: từ truy xuất đến câu trả lời có căn cứ",
+    "fullTitle": "Day 08 — RAG: từ truy xuất đến câu trả lời có căn cứ",
+    "phase": "Giai đoạn 2: Xây hệ thống & Dữ liệu",
+    "phaseShort": "Hệ thống & Data",
+    "keyIdea": "RAG là chuỗi indexing–retrieval–generation; cần tối ưu riêng từng chặng và buộc câu trả lời bám nguồn, có citation hoặc nói rõ khi thiếu dữ liệu.",
+    "sections": [
+      "1. RAG hay fine-tuning?",
+      "2. Ba pipeline của RAG",
+      "3. Đánh giá RAG",
+      "4. Quy trình debug ngắn"
+    ],
+    "filename": "day08_course.md",
+    "path": "/course/day08_course.md"
+  },
+  {
+    "dayNum": 9,
+    "dayId": "Day 09",
+    "title": "Multi-agent, MCP, A2A và LangGraph",
+    "fullTitle": "Day 09 — Multi-agent, MCP, A2A và LangGraph",
+    "phase": "Giai đoạn 2: Xây hệ thống & Dữ liệu",
+    "phaseShort": "Hệ thống & Data",
+    "keyIdea": "Nhiều agent chỉ đáng dùng khi chia vai trò giúp xử lý tốt hơn một agent đơn; cần một nơi có thẩm quyền điều phối, trạng thái và dừng hệ thống.",
+    "sections": [
+      "1. Khi nào cần multi-agent?",
+      "2. Pattern điều phối",
+      "3. Bộ nhớ và cách lập kế hoạch",
+      "4. MCP, A2A và orchestration",
+      "5. Độ tin cậy, bảo mật và chi phí"
+    ],
+    "filename": "day09_course.md",
+    "path": "/course/day09_course.md"
+  },
+  {
+    "dayNum": 10,
+    "dayId": "Day 10",
+    "title": "Data pipeline và data observability",
+    "fullTitle": "Day 10 — Data pipeline và data observability",
+    "phase": "Giai đoạn 2: Xây hệ thống & Dữ liệu",
+    "phaseShort": "Hệ thống & Data",
+    "keyIdea": "Pipeline dữ liệu có thể “chạy xanh” nhưng đưa dữ liệu sai, cũ hoặc thiếu vào RAG/agent; cần hợp đồng, quality gates và quan sát xuyên suốt.",
+    "sections": [
+      "1. Từ nguồn dữ liệu đến ứng dụng",
+      "2. Transform, chất lượng và hợp đồng",
+      "3. Lưu trữ và phục vụ",
+      "4. Data observability",
+      "5. Vận hành, pháp lý và kinh tế"
+    ],
+    "filename": "day10_course.md",
+    "path": "/course/day10_course.md"
+  },
+  {
+    "dayNum": 11,
+    "dayId": "Day 11",
+    "title": "Guardrails, HITL và Responsible AI",
+    "fullTitle": "Day 11 — Guardrails, HITL và Responsible AI",
+    "phase": "Giai đoạn 3: An toàn, Production & Đánh giá",
+    "phaseShort": "Production & Eval",
+    "keyIdea": "Không có một bộ lọc nào bảo đảm an toàn; dùng phòng thủ nhiều lớp, giới hạn quyền và quyết định trước khi nào phải dừng/chuyển cho người.",
+    "sections": [
+      "1. Mối đe dọa cần tính đến",
+      "2. Defense in depth",
+      "3. HITL (Human-in-the-Loop)",
+      "4. Red teaming và đánh giá an toàn",
+      "5. Quản trị và UX tin cậy"
+    ],
+    "filename": "day11_course.md",
+    "path": "/course/day11_course.md"
+  },
+  {
+    "dayNum": 12,
+    "dayId": "Day 12",
+    "title": "Đưa agent lên production",
+    "fullTitle": "Day 12 — Đưa agent lên production",
+    "phase": "Giai đoạn 3: An toàn, Production & Đánh giá",
+    "phaseShort": "Production & Eval",
+    "keyIdea": "Production đòi state bền vững, giới hạn chi phí/quyền, xử lý lỗi mạng và phát hành có thể quan sát/rollback—not chỉ chạy được trên máy cá nhân.",
+    "sections": [
+      "1. Chọn mô hình triển khai",
+      "2. Thiết kế dịch vụ bền vững",
+      "3. Bảo vệ ứng dụng và container",
+      "4. Health, scaling và độ tin cậy",
+      "5. CI/CD và phát hành an toàn",
+      "Checklist trước deploy"
+    ],
+    "filename": "day12_course.md",
+    "path": "/course/day12_course.md"
+  },
+  {
+    "dayNum": 13,
+    "dayId": "Day 13",
+    "title": "Monitoring, logging và observability",
+    "fullTitle": "Day 13 — Monitoring, logging và observability",
+    "phase": "Giai đoạn 3: An toàn, Production & Đánh giá",
+    "phaseShort": "Production & Eval",
+    "keyIdea": "Monitoring cho biết tín hiệu nào đang vượt ngưỡng; observability giúp lần theo nguyên nhân qua metrics, logs, traces và đánh giá chất lượng liên tục.",
+    "sections": [
+      "1. Bốn trụ cột quan sát agent",
+      "2. Structured logging an toàn",
+      "3. Distributed tracing cho agent",
+      "4. Dashboard, SLI/SLO/SLA và alert",
+      "5. Quy trình điều tra incident"
+    ],
+    "filename": "day13_course.md",
+    "path": "/course/day13_course.md"
+  },
+  {
+    "dayNum": 14,
+    "dayId": "Day 14",
+    "title": "Evaluation và benchmarking cho AI",
+    "fullTitle": "Day 14 — Evaluation và benchmarking cho AI",
+    "phase": "Giai đoạn 3: An toàn, Production & Đánh giá",
+    "phaseShort": "Production & Eval",
+    "keyIdea": "Eval là một vòng lặp khoa học: định nghĩa tiêu chí, thu mẫu đại diện, đo lỗi, kiểm tra độ tin cậy của grader rồi dùng kết quả để cải thiện hệ thống.",
+    "sections": [
+      "1. Ba cách đánh giá",
+      "2. Golden Dataset",
+      "3. Metric cho RAG",
+      "4. LLM-as-a-Judge",
+      "5. Thống kê và độ tin cậy",
+      "6. Phân tích lỗi trước khi tối ưu metric"
+    ],
+    "filename": "day14_course.md",
+    "path": "/course/day14_course.md"
+  },
+  {
+    "dayNum": 15,
+    "dayId": "Day 15",
+    "title": "Production, chi phí và định hướng chuyên sâu",
+    "fullTitle": "Day 15 — Production, chi phí và định hướng chuyên sâu",
+    "phase": "Giai đoạn 3: An toàn, Production & Đánh giá",
+    "phaseShort": "Production & Eval",
+    "keyIdea": "Một AI product sẵn sàng production khi giá trị, độ tin cậy, chi phí và quyền kiểm soát cùng được đo; portfolio cần chứng minh toàn bộ vòng đời chứ không chỉ demo.",
+    "sections": [
+      "1. Triển khai doanh nghiệp",
+      "2. Bốn cách tối ưu chi phí",
+      "3. Mẫu reliability cho tải production",
+      "4. Chọn hướng phát triển",
+      "5. Portfolio cuối Phase 1"
+    ],
+    "filename": "day15_course.md",
+    "path": "/course/day15_course.md"
+  }
+]
